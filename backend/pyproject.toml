@@ -7,6 +7,8 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
+fastapi = {extras = ["standard"], version = "^0.112.2"}
+sqlmodel = "^0.0.21"
 
 
 [build-system]
