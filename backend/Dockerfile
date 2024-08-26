@@ -9,7 +9,10 @@ ARG APP_DIR
 ARG DEV=false
 
 ENV VIRTUAL_ENV=${APP_DIR}/.venv \
-    PATH="${APP_DIR}/.venv/bin:$PATH"
+    PATH="${APP_DIR}/.venv/bin:$PATH" \
+    POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    POETRY_VIRTUALENVS_CREATE=1
 
 RUN apk update && \
     apk add libpq
@@ -32,10 +35,6 @@ ENV PATH /root/.local/bin:$PATH
 # change work directory for where our app will live
 WORKDIR ${APP_DIR}
 COPY pyproject.toml poetry.lock ./
-
-ENV POETRY_NO_INTERACTION=1 \
-    POETRY_VIRTUALENVS_IN_PROJECT=1 \
-    POETRY_VIRTUALENVS_CREATE=1
 
 RUN if [ $DEV ]; then \
     poetry install; \
