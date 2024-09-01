@@ -47,7 +47,7 @@ listings = {
     2: {
         "id": 2,
         "name": "Listing 2",
-        "description": "Description of listing 2"
+        "description": "Description of listing 2",
         "beds": 3,
         "bedrooms": 3,
         "mean_rating": 4.0,
@@ -57,7 +57,7 @@ listings = {
 }
 
 @app.get("/listing")
-def get_listing(id: Optional[int] = Query(None, description="The ID of the listing to retrieve")):
+async def get_listing(id: int = Query(None, description="The ID of the listing to retrieve")):
     """
     Get listing record for a given ID.
 
