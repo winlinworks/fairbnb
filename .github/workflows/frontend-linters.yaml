@@ -1,4 +1,4 @@
-name: Run prettier for frontend
+name: Run eslint and prettier for frontend
 
 on:
   pull_request:
@@ -17,8 +17,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  prettier:
-    name: Prettier
+  linter:
+    name: Linter
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -40,5 +40,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Check formatting with Prettier
+      - name: Run linter
         run: npm run lint
+
+      - name: Run prettier
+        run: npm run prettier
