@@ -11,6 +11,10 @@ fastapi = {extras = ["standard"], version = "^0.112.2"}
 sqlmodel = "^0.0.21"
 
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.2"
+ruff = "^0.6.3"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
