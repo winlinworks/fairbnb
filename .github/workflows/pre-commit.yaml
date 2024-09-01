@@ -3,12 +3,12 @@ name: Run pre-commit for backend
 on:
   pull_request:
     paths:
-      - ./backend/**
+      - "backend/**"
     branches:
       - main
   push:
     paths:
-      - ./backend/**
+      - "backend/**"
     branches:
       - main
 

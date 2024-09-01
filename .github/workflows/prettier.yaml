@@ -3,12 +3,12 @@ name: Run prettier for frontend
 on:
   pull_request:
     paths:
-      - ./frontend/**
+      - "frontend/**"
     branches:
       - main
   push:
     paths:
-      - ./frontend/**
+      - "frontend/**"
     branches:
       - main
 
