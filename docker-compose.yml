@@ -33,7 +33,6 @@ services:
       - "8000:8000"
     volumes:
       - ./backend/src:/app/src
-      - /app/.venv
     depends_on:
       - db
       - redis
@@ -42,7 +41,7 @@ services:
     environment:
       POSTGRES_DB: devdatabase
       POSTGRES_USER: devdbuser
-      POSTGRES_PASSWORD: secretSquirrel1984@
+      POSTGRES_PASSWORD: secretSquirrel1984
     ports:
       - "5432:5432"
     volumes:
