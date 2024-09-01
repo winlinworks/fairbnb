@@ -14,11 +14,8 @@ POSTGRES_DB = os.getenv("POSTGRES_DB")
 # Define the PostgreSQL URL
 DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASS}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
 
-breakpoint()
 # Create the SQLAlchemy engine
 engine = create_engine(DATABASE_URL)
-
-breakpoint()
 
 # Define the base class for declarative models
 Base = declarative_base()
@@ -40,8 +37,6 @@ class Listing(Base):
 
 # Create the tables in the database
 Base.metadata.create_all(engine)
-
-breakpoint()
 
 # Create a session
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
