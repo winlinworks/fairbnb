@@ -1,0 +1,38 @@
+name: Run pre-commit for backend
+
+on:
+  pull_request:
+    paths:
+      - "backend/**"
+    branches:
+      - main
+  push:
+    paths:
+      - "backend/**"
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    strategy:
+      matrix:
+        python-version: [3.12]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run pre-commit hooks
+        uses: pre-commit/action@v3.0.1

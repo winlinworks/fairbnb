@@ -1,9 +1,20 @@
-name: Run Tests
-on:  # yamllint disable-line rule:truthy
+name: Run backend tests
+
+on:
   pull_request:
-  push:
+    paths:
+      - "backend/**"
     branches:
       - main
+  push:
+    paths:
+      - "backend/**"
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   pytest:
@@ -12,14 +23,17 @@ jobs:
     defaults:
       run:
         working-directory: ./backend
+    strategy:
+      matrix:
+        python-version: [3.12]
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: 3.12
+          python-version: ${{ matrix.python-version }}
 
       - name: Install and configure Poetry
         uses: snok/install-poetry@v1
