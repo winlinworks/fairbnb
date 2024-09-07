@@ -16,6 +16,8 @@ services:
     ports:
       - "3000:3000"
   backend:
+    env_file:
+      - ./backend/.env.docker
     container_name: backend
     build:
       context: ./backend
