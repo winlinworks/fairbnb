@@ -19,3 +19,12 @@ ruff = "^0.6.3"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "W", "E", "UP", "SIM", "RSE", "C", "N", "S", "EM", "COM", "R", "ARG", "LOG", "G", "T10"]
+ignore = [
+    "E501", # Disable line length check
+    "COM812", # Disable missing-trailing-comma incompatible with ruff format
+    "D203", # Disable one-blank-line-before-class incompatible with ruff format
+    "D212", # Disable multi-line-summary-first-line incompatible with ruff format
+]
