@@ -13,7 +13,7 @@ class ListingBase(BaseModel):
 
 
 class ListingCreate(ListingBase):
-    id: int = Field(..., description="The ID of the listing")
+    pass
 
 
 class Listing(ListingBase):

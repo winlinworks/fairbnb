@@ -6,12 +6,12 @@ from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 
 from src.crud import (
+    create_listing,
     create_user,
-    create_user_listing,
-    get_listings,
-    get_user,
-    get_user_by_email,
-    get_users,
+    read_listings,
+    read_user,
+    read_user_by_email,
+    read_users,
 )
 from src.db import SessionLocal
 from src.schemas import Listing, ListingCreate, User, UserCreate
@@ -44,33 +44,39 @@ def get_db():
 
 
 @app.post("/users/", response_model=User)
-def create_user_endpoint(user: UserCreate, db: Session = Depends(get_db)):
-    db_user = get_user_by_email(db, user.email)
+def post_user(user: UserCreate, db: Session = Depends(get_db)):
+    db_user = read_user_by_email(db, user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     return create_user(db, user)
 
 
 @app.get("/users/", response_model=list[User])
-def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return get_users(db, skip, limit)
+def get_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return read_users(db, skip, limit)
 
 
 @app.get("/users/{user_id}", response_model=User)
-def read_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = get_user(db, user_id)
+def get_user(user_id: int, db: Session = Depends(get_db)):
+    db_user = read_user(db, user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
 
 
 @app.post("/users/{user_id}/listings/", response_model=Listing)
-def create_listing_for_user(
-    user_id: int, listing: ListingCreate, db: Session = Depends(get_db)
-):
-    return create_user_listing(db, listing, user_id)
+def post_listing(user_id: int, listing: ListingCreate, db: Session = Depends(get_db)):
+    return create_listing(db, listing, user_id)
 
 
 @app.get("/listings/", response_model=list[Listing])
-def read_listings(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return get_listings(db, skip, limit)
+def get_listings(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return read_listings(db, skip, limit)
+
+
+@app.get("/listings/{listing_id}", response_model=Listing)
+def get_listing(listing_id: int, db: Session = Depends(get_db)):
+    db_listing = read_listings(db, listing_id)
+    if db_listing is None:
+        raise HTTPException(status_code=404, detail="Listing not found")
+    return db_listing
