@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 
 # Pydantic model for listings
@@ -27,7 +27,15 @@ class Listing(ListingBase):
 # Pydanitc model for users
 class UserBase(BaseModel):
     username: str = Field(..., description="The username of the user")
-    email: str = Field(..., description="The email of the user")
+    email: EmailStr = Field(..., description="The email of the user")
+
+    @field_validator("email")
+    @classmethod
+    def email_must_not_be_empty(cls, v):
+        if v.strip() == "":
+            msg = "Email must not be an empty string"
+            raise ValueError(msg)
+        return v
 
 
 class UserCreate(UserBase):
