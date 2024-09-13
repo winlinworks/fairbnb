@@ -1,7 +1,11 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from src.main import app
+from src.main import app, get_db
+from tests.conftest import get_test_db
+
+# Override the get_db dependency with get_test_db
+app.dependency_overrides[get_db] = get_test_db
 
 client = TestClient(app)
 
@@ -17,11 +21,10 @@ def mock_user():
     }
 
 
-# @pytest.mark.skip(reason="Not implemented")
 @pytest.mark.parametrize(
     "mock_user_changes,expected_status_code",
     [
-        pytest.param({}, 200, id="Base case, no changes"),
+        pytest.param({}, 200, id="Valid user"),
         pytest.param({}, 400, id="Duplicate email"),
         pytest.param({"email": ""}, 422, id="Empty string email"),
         pytest.param({"email": None}, 422, id="Missing email"),

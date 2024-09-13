@@ -15,15 +15,15 @@ def create_user(db: Session, user: UserCreate):
     return db_user
 
 
-def read_user(db: Session, user_id: int):
+def read_user(db: Session, user_id: int) -> User:
     return db.query(User).filter(User.id == user_id).first()
 
 
-def read_user_by_email(db: Session, email: str):
+def read_user_by_email(db: Session, email: str) -> User:
     return db.query(User).filter(User.email == email).first()
 
 
-def read_users(db: Session, skip: int = 0, limit: int = 100):
+def read_users(db: Session, skip: int = 0, limit: int = 100) -> list[User]:
     return db.query(User).offset(skip).limit(limit).all()
 
 
@@ -35,9 +35,9 @@ def create_listing(db: Session, listing: ListingCreate, user_id: int):
     return db_listing
 
 
-def read_listing(db: Session, listing_id: int):
+def read_listing(db: Session, listing_id: int) -> Listing:
     return db.query(Listing).filter(Listing.id == listing_id).first()
 
 
-def read_listings(db: Session, skip: int = 0, limit: int = 100):
+def read_listings(db: Session, skip: int = 0, limit: int = 100) -> list[Listing]:
     return db.query(Listing).offset(skip).limit(limit).all()

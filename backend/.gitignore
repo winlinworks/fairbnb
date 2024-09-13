@@ -1,3 +1,6 @@
+# Local files
+test_db.sqlite
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
