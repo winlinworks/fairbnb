@@ -1,0 +1,4 @@
+id,name,description,beds,bedrooms,mean_rating,count_ratings,nightly_price,owner_id
+1,Cozy Cottage,A cozy cottage in the countryside.,2,1,4.5,10,100.0,1
+2,Modern Apartment,A modern apartment in the city center.,1,1,4.8,20,150.0,2
+3,Beach House,A beautiful beach house with ocean views.,3,2,4.7,15,200.0,3

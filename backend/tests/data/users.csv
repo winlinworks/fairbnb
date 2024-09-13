@@ -1,0 +1,4 @@
+id,username,email,hashed_password,is_active
+1,john_doe,john@example.com,hashed_password_1,True
+2,jane_doe,jane@example.com,hashed_password_2,True
+3,alice,alice@example.com,hashed_password_3,True

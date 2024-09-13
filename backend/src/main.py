@@ -2,9 +2,19 @@ import logging
 import sys
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
+from sqlalchemy.orm import Session
 
-from src.models import CreateListing, Listing
+from src.crud import (
+    create_listing,
+    create_user,
+    read_listings,
+    read_user,
+    read_user_by_email,
+    read_users,
+)
+from src.db import SessionLocal
+from src.schemas import Listing, ListingCreate, User, UserCreate
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -15,7 +25,7 @@ logger.addHandler(stream_handler)
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI):  # noqa: ARG001
     logger.info("startup: triggered")
     yield
     logger.info("shutdown: triggered")
@@ -24,102 +34,50 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 
-@app.get("/")
-def hello():
-    return {"Hello": "World"}
+# Dependency to get the database session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
-# write FastAPI endpoint to get listing record for ID
-# example: GET /listing?id=1
-# response: {"id": 1, "name": "Listing 1", "description": "Description of listing 1"}
-# if ID does not exist, return 404 status code
-# if ID is not provided, return 400 status code
+@app.post("/users/", response_model=User)
+def post_user(user: UserCreate, db: Session = Depends(get_db)):
+    db_user = read_user_by_email(db, user.email)
 
-# Mock database
-listings = {
-    1: {
-        "id": 1,
-        "name": "Listing 1",
-        "description": "Description of listing 1",
-        "beds": 2,
-        "bedrooms": 2,
-        "mean_rating": 4.5,
-        "count_ratings": 100,
-        "nightly_price": 100,
-    },
-    2: {
-        "id": 2,
-        "name": "Listing 2",
-        "description": "Description of listing 2",
-        "beds": 3,
-        "bedrooms": 3,
-        "mean_rating": 4.0,
-        "count_ratings": 50,
-        "nightly_price": 150,
-    },
-    # Add more listings as needed
-}
+    if db_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    return create_user(db, user)
 
 
-@app.post("/listings", response_model=Listing)
-async def create_listing(listing: CreateListing):
-    # Check if the listing exists
-    # TODO: Replace with database logic
-    if listing_exists():
-        raise HTTPException(
-            status_code=400, detail="Listing with this ID already exists"
-        )
-
-    listings[listing.id] = listing.model_dump()
-    return listing
+@app.get("/users/", response_model=list[User])
+def get_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return read_users(db, skip, limit)
 
 
-def listing_exists():
-    """
-    Check if a listing exists in the database given metadata.
-    """
-    return False
+@app.get("/users/{user_id}", response_model=User)
+def get_user(user_id: int, db: Session = Depends(get_db)):
+    db_user = read_user(db, user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_user
 
 
-@app.get("/listings", response_model=list[Listing])
-async def get_listings():
-    # Return all listings
-    # TODO: Replace with database logic
-    return [Listing(**listing) for listing in listings.values()]
+@app.post("/users/{user_id}/listings/", response_model=Listing)
+def post_listing(user_id: int, listing: ListingCreate, db: Session = Depends(get_db)):
+    return create_listing(db, listing, user_id)
+
+
+@app.get("/listings/", response_model=list[Listing])
+def get_listings(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return read_listings(db, skip, limit)
 
 
 @app.get("/listings/{listing_id}", response_model=Listing)
-async def get_listing(listing_id: int):
-    # Check if the listing exists
-    # TODO: Replace with database logic
-    listing = listings.get(listing_id)
-
-    if listing is None:
-        raise HTTPException(status_code=404, detail=f"Listing {listing_id=} not found")
-
-    return listing
-
-
-@app.put("/listings/{listing_id}", response_model=Listing)
-async def update_listing(listing_id: int, listing: Listing):
-    # Check if the listing exists
-    # TODO: Replace with database logic
-    if listing_id not in listings:
-        raise HTTPException(status_code=404, detail=f"Listing {listing_id=} not found")
-
-    # Update the listing in the mock database
-    listings[listing_id] = listing.model_dump()
-    return listing
-
-
-@app.delete("/listings/{listing_id}")
-async def delete_listing(listing_id: int):
-    # Check if the listing exists
-    # TODO: Replace with database logic
-    listing = listings.pop(listing_id, None)
-
-    # If the listing does not exist, raise an error
-    if listing is None:
-        raise HTTPException(status_code=404, detail=f"Listing {listing_id=} not found")
-
-    return {"ok": True}
+def get_listing(listing_id: int, db: Session = Depends(get_db)):
+    db_listing = read_listings(db, listing_id)
+    if db_listing is None:
+        raise HTTPException(status_code=404, detail="Listing not found")
+    return db_listing

@@ -1,0 +1,35 @@
+[
+    {
+        "id": 1,
+        "name": "Cozy Cottage",
+        "description": "A cozy cottage in the countryside.",
+        "beds": 2,
+        "bedrooms": 1,
+        "mean_rating": 4.5,
+        "count_ratings": 10,
+        "nightly_price": 100.0,
+        "owner_id": 1
+    },
+    {
+        "id": 2,
+        "name": "Modern Apartment",
+        "description": "A modern apartment in the city center.",
+        "beds": 1,
+        "bedrooms": 1,
+        "mean_rating": 4.8,
+        "count_ratings": 20,
+        "nightly_price": 150.0,
+        "owner_id": 2
+    },
+    {
+        "id": 3,
+        "name": "Beach House",
+        "description": "A beautiful beach house with ocean views.",
+        "beds": 3,
+        "bedrooms": 2,
+        "mean_rating": 4.7,
+        "count_ratings": 15,
+        "nightly_price": 200.0,
+        "owner_id": 3
+    }
+]

@@ -1,0 +1,23 @@
+[
+    {
+        "id": 1,
+        "username": "john_doe",
+        "email": "john@example.com",
+        "password": "hashed_password_1",
+        "is_active": true
+    },
+    {
+        "id": 2,
+        "username": "jane_doe",
+        "email": "jane@example.com",
+        "password": "hashed_password_2",
+        "is_active": true
+    },
+    {
+        "id": 3,
+        "username": "alice",
+        "email": "alice@example.com",
+        "password": "hashed_password_3",
+        "is_active": true
+    }
+]

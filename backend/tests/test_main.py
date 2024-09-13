@@ -1,31 +1,62 @@
 import pytest
 from fastapi.testclient import TestClient
-from src.main import app, listings
+
+from src.main import app, get_db
+from tests.conftest import get_test_db
+
+# Override the get_db dependency with get_test_db
+app.dependency_overrides[get_db] = get_test_db
 
 client = TestClient(app)
 
+API_URL = "http://localhost:8000"
+
+
+@pytest.fixture
+def mock_user():
+    return {
+        "username": "john_doe",
+        "email": "john@example.com",
+        "password": "hashed_password_1",
+    }
+
 
 @pytest.mark.parametrize(
-    "id, expected_status, expected_detail",
+    "mock_user_changes,expected_status_code",
     [
-        (1, 200, None),
-        (
-            999,
-            404,
-            "Listing listing_id=999 not found",
-        ),  # Assuming 999 is an ID that does not exist
+        pytest.param({}, 200, id="Valid user"),
+        pytest.param({}, 400, id="Duplicate email"),
+        pytest.param({"email": ""}, 422, id="Empty string email"),
+        pytest.param({"email": None}, 422, id="Missing email"),
     ],
 )
-def test_get_listing(id, expected_status, expected_detail):
-    response = client.get(f"/listings/{id}")
+def test_post_user(mock_user, mock_user_changes, expected_status_code):
+    user = mock_user.copy()
+    user.update(mock_user_changes)
 
-    assert response.status_code == expected_status
-    if expected_status != 200:
-        assert response.json()["detail"] == expected_detail
+    endpoint = f"{API_URL}/users"
+    response = client.post(endpoint, json=user)
+
+    assert response.status_code == expected_status_code  # noqa: S101
 
 
-def test_get_listings():
-    response = client.get("/listings")
+@pytest.fixture
+def mock_listing_base():
+    return {
+        "name": "Cozy Cottage",
+        "description": "A cozy cottage in the countryside.",
+        "beds": 2,
+        "bedrooms": 1,
+        "mean_rating": 4.5,
+        "count_ratings": 10,
+        "nightly_price": 100.0,
+    }
 
-    assert response.status_code == 200
-    assert len(response.json()) == len(listings)
+
+@pytest.fixture
+def mock_listing(mock_listing_base):
+    mock_listing = mock_listing_base.copy()
+    mock_listing["id"] = 1
+    mock_listing["owner_id"] = 1
+
+    return mock_listing
