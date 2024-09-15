@@ -1,10 +1,13 @@
 from sqlalchemy.orm import Session
 
 from src.models import Listing, User
-from src.schemas import ListingCreate, UserCreate
+from src.schemas import ListingCreate, UserCreate, UserRead
+from src.utils import update_record
+
+# User CRUD ops
 
 
-def create_user(db: Session, user: UserCreate):
+def create_user(db: Session, user: UserCreate) -> User:
     fake_hashed_password = user.password + "notreallyhashed"
     db_user = User(
         email=user.email, username=user.username, hashed_password=fake_hashed_password
@@ -25,6 +28,22 @@ def read_user_by_email(db: Session, email: str) -> User:
 
 def read_users(db: Session, skip: int = 0, limit: int = 100) -> list[User]:
     return db.query(User).offset(skip).limit(limit).all()
+
+
+def update_user(db: Session, user_id: int, new_user_data: UserRead):
+    db_user = read_user(db, user_id)
+
+    # Update user fields
+    update_record(db_user, new_user_data)
+
+    # Save changes
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+
+# Listing CRUD ops
 
 
 def create_listing(db: Session, listing: ListingCreate, user_id: int):

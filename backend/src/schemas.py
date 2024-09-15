@@ -16,7 +16,7 @@ class ListingCreate(ListingBase):
     pass
 
 
-class Listing(ListingBase):
+class ListingRead(ListingBase):
     id: int = Field(..., description="The ID of the listing")
     owner_id: int = Field(..., description="The ID of the owner")
 
@@ -42,10 +42,10 @@ class UserCreate(UserBase):
     password: str = Field(..., description="The password of the user")
 
 
-class User(UserBase):
-    id: int = Field(..., description="The ID of the user")
+class UserRead(UserBase):
+    id: int | None = Field(..., description="The ID of the user")
     is_active: bool = Field(..., description="The active status of the user")
-    listings: list[Listing] = []
+    listings: list[ListingRead] = []
 
     class Config:
         orm_mode = True
