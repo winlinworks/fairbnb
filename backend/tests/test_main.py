@@ -76,6 +76,20 @@ class TestUser:
         # Check the status code
         assert response.status_code == expected_status_code  # noqa: S101
 
+    def test_delete_user(self, mock_user):
+        # Create a user
+        endpoint = f"{API_URL}/users"
+        response = client.post(endpoint, json=mock_user)
+
+        # Get the user ID
+        user_id = response.json()["id"]
+
+        # Delete the user
+        endpoint = f"{API_URL}/users/{user_id}"
+        response = client.delete(endpoint)
+
+        assert response.status_code == 200  # noqa: S101
+
 
 @pytest.fixture
 def mock_listing_base():

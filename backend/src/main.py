@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from src.crud import (
     create_listing,
     create_user,
+    delete_user,
     read_listings,
     read_user,
     read_user_by_email,
@@ -73,6 +74,16 @@ def put_user(user_id: int, user: UserRead, db: Session = Depends(get_db)):
         return create_user(db, user)
 
     return update_user(db, user_id, user)
+
+
+@app.delete("/users/{user_id}")
+def remove_user(user_id: int, db: Session = Depends(get_db)):
+    db_user = read_user(db, user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    delete_user(db, user_id)
+    return {"message": "User deleted"}
 
 
 @app.post("/users/{user_id}/listings/", response_model=ListingRead)

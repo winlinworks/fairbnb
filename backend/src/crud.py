@@ -43,6 +43,13 @@ def update_user(db: Session, user_id: int, new_user_data: UserRead):
     return db_user
 
 
+def delete_user(db: Session, user_id: int):
+    db_user = read_user(db, user_id)
+    db.delete(db_user)
+    db.commit()
+    return {"message": "User deleted"}
+
+
 # Listing CRUD ops
 
 
