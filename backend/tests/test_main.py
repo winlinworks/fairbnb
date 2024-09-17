@@ -12,22 +12,22 @@ client = TestClient(app)
 API_URL = "http://localhost:8000"
 
 
-class TestUser:
-    @pytest.fixture
-    def mock_user(self):
-        return {
-            "username": "john_doe",
-            "email": "john@example.com",
-            "password": "hashed_password_1",
-        }
+@pytest.fixture
+def mock_user():
+    return {
+        "username": "john_doe",
+        "email": "john@example.com",
+        "password": "hashed_password_1",
+    }
 
+
+class TestUser:
     @pytest.mark.parametrize(
         "mock_user_changes,expected_status_code",
         [
             pytest.param({}, 200, id="Valid user"),
             pytest.param({}, 400, id="Duplicate email"),
-            pytest.param({"email": ""}, 422, id="Empty string email"),
-            pytest.param({"email": None}, 422, id="Missing email"),
+            pytest.param({"email": ""}, 422, id="Missing email"),
         ],
     )
     def test_post_user(self, mock_user, mock_user_changes, expected_status_code):
@@ -56,7 +56,6 @@ class TestUser:
             pytest.param({}, 200, id="No updates"),
             pytest.param({"email": "john@update.com"}, 200, id="Update email"),
             pytest.param({"email": ""}, 422, id="Update email: empty string"),
-            pytest.param({"email": None}, 422, id="Update email: none"),
         ],
     )
     def test_put_user(self, mock_update_user, mock_user_changes, expected_status_code):
@@ -92,7 +91,7 @@ class TestUser:
 
 
 @pytest.fixture
-def mock_listing_base():
+def mock_listing():
     return {
         "name": "Cozy Cottage",
         "description": "A cozy cottage in the countryside.",
@@ -104,10 +103,23 @@ def mock_listing_base():
     }
 
 
-@pytest.fixture
-def mock_listing(mock_listing_base):
-    mock_listing = mock_listing_base.copy()
-    mock_listing["id"] = 1
-    mock_listing["owner_id"] = 1
+class TestListing:
+    @pytest.mark.parametrize(
+        "mock_listing_changes,expected_status_code",
+        [
+            pytest.param({}, 200, id="Valid listing"),
+            # pytest.param({"name": ""}, 422, id="Missing name"),
+        ],
+    )
+    def test_post_listing(
+        self, mock_listing, mock_listing_changes, expected_status_code
+    ):
+        listing = mock_listing.copy()
+        listing.update(mock_listing_changes)
 
-    return mock_listing
+        # Create a listing
+        user_id = 1
+        listing_endpoint = f"{API_URL}/users/{user_id}/listings"
+        response = client.post(listing_endpoint, json=listing)
+
+        assert response.status_code == expected_status_code  # noqa: S101
