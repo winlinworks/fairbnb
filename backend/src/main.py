@@ -14,6 +14,7 @@ from src.crud import (
     read_user,
     read_user_by_email,
     read_users,
+    update_listing,
     update_user,
 )
 from src.db import get_db
@@ -94,3 +95,12 @@ def get_listing(listing_id: int, db: Session = Depends(get_db)):
     if db_listing is None:
         raise HTTPException(status_code=404, detail="Listing not found")
     return db_listing
+
+
+@app.put("/listings/{listing_id}", response_model=ListingRead)
+def put_listing(listing_id: int, listing: ListingRead, db: Session = Depends(get_db)):
+    db_listing = read_listing(db, listing_id)
+    if db_listing is None:
+        return create_listing(db, listing)
+
+    return update_listing(db, listing_id, listing)

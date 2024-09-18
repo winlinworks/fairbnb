@@ -82,13 +82,13 @@ class TestUser:
         mock_user_changes,
         expected_status_code,
     ):
-        # Update mock updated user
-        update_user = mock_update_user.copy()
-        update_user.update(mock_user_changes)
-
         # Create a user
         user = UserCreate(**mock_user)
         user = create_user(test_db, user)
+
+        # Update mock updated user
+        update_user = mock_update_user.copy()
+        update_user.update(mock_user_changes)
 
         # Add the user ID to the update user
         update_user["id"] = user.id
@@ -185,4 +185,54 @@ class TestListing:
         endpoint = f"{API_URL}/listings/{mock_listing_id}"
         response = client.get(endpoint)
 
+        assert response.status_code == expected_status_code  # noqa: S101
+
+    @pytest.fixture
+    def mock_update_listing(self, mock_listing):
+        return mock_listing.copy()
+
+    @pytest.mark.parametrize(
+        "mock_listing_changes,expected_status_code",
+        [
+            pytest.param({}, 200, id="No updates"),
+            pytest.param(
+                {"name": "A cozy house in the country"}, 200, id="Update valid name"
+            ),
+            pytest.param({"name": ""}, 422, id="Update invalid name"),
+        ],
+    )
+    def test_update_listing(
+        self,
+        test_db,
+        mock_user,
+        mock_listing,
+        mock_update_listing,
+        mock_listing_changes,
+        expected_status_code,
+    ):
+        # Create a user
+        user = UserCreate(**mock_user)
+        user = create_user(test_db, user)
+
+        # Create a listing
+        listing = ListingCreate(**mock_listing)
+        listing = create_listing(test_db, listing, user.id)
+
+        # Update the mock updated listing
+        update_listing = mock_update_listing.copy()
+        update_listing.update(mock_listing_changes)
+
+        # Add the listing ID and owner ID to the update user
+        update_listing["id"] = listing.id
+        update_listing["owner_id"] = user.id
+
+        # Update the listing
+        endpoint = f"{API_URL}/listings/{listing.id}"
+        response = client.put(endpoint, json=update_listing)
+
+        # If the update of valid email was successful, check the email
+        if expected_status_code == 200:
+            assert response.json()["name"] == update_listing["name"]  # noqa: S101
+
+        # Check the status code
         assert response.status_code == expected_status_code  # noqa: S101
