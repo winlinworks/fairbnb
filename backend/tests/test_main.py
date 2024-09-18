@@ -104,16 +104,23 @@ class TestUser:
         # Check the status code
         assert response.status_code == expected_status_code  # noqa: S101
 
-    def test_delete_user(self, test_db, mock_user):
+    @pytest.mark.parametrize(
+        "mock_user_id,expected_status_code",
+        [
+            pytest.param(1, 200, id="Delete valid ID"),
+            pytest.param(0, 404, id="Delete invalid ID"),
+        ],
+    )
+    def test_delete_user(self, test_db, mock_user, mock_user_id, expected_status_code):
         # Create a user
         user = UserCreate(**mock_user)
         user = create_user(test_db, user)
 
         # Delete the user
-        endpoint = f"{API_URL}/users/{user.id}"
+        endpoint = f"{API_URL}/users/{mock_user_id}"
         response = client.delete(endpoint)
 
-        assert response.status_code == 200  # noqa: S101
+        assert response.status_code == expected_status_code  # noqa: S101
 
 
 @pytest.fixture
