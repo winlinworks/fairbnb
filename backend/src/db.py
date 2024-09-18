@@ -1,7 +1,6 @@
 import os
 
 from sqlalchemy import URL, create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # Get the environment variables for the database connection
@@ -26,6 +25,3 @@ engine = create_engine(DB_URL)
 
 # Create a local session class to create session instances
 DBSession = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# Define the base class for declarative models
-Base = declarative_base()
