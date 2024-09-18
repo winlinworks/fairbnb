@@ -1,7 +1,7 @@
 import os
 
-from sqlalchemy import URL, create_engine
-from sqlalchemy.ext.declarative import declarative_base
+from fastapi import Depends
+from sqlalchemy import URL, Engine, create_engine
 from sqlalchemy.orm import sessionmaker
 
 # Get the environment variables for the database connection
@@ -21,11 +21,23 @@ DB_URL = URL.create(
     database=POSTGRES_DB,
 )
 
-# Create the SQLAlchemy engine
-engine = create_engine(DB_URL)
+# DB engine
+db_engine = create_engine(DB_URL)
 
-# Create a local session class to create session instances
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Define the base class for declarative models
-Base = declarative_base()
+# Dependency to get DB engine
+def get_engine():
+    return db_engine
+
+
+# Dependency to get DB session from API endpoints
+def get_db(engine: Engine = Depends(get_engine)):
+    # Create DB session factory
+    DBSession = sessionmaker(autocommit=False, autoflush=False, bind=engine)  # noqa: N806
+
+    # Create DB session and yield it
+    session = DBSession()
+    try:
+        yield session
+    finally:
+        session.close()
