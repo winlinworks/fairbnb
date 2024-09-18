@@ -12,26 +12,26 @@ TEST_DB_URL = "sqlite:///test_db.sqlite"
 if os.path.exists("test_db.sqlite"):
     os.remove("test_db.sqlite")
 
-# Create an engine
-engine = create_engine(TEST_DB_URL)
+# Create an engine for test DV
+test_engine = create_engine(TEST_DB_URL)
+
+# Create all tables
+Base.metadata.create_all(bind=test_engine)
+
+# Create a test DB session factory method
+TestDBSession = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
 
 
 # Override the get_db dependency with get_test_db
 def get_test_db():
     # If the backend is not using SQLite, raise an error
-    if engine.url.get_backend_name() != "sqlite":
+    if test_engine.url.get_backend_name() != "sqlite":
         error_msg = "Use SQLite backend to run tests"
         raise RuntimeError(error_msg)
 
-    # Create a DB session factory method
-    session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-    # Create all tables
-    Base.metadata.create_all(bind=engine)
-
     try:
         # Create a session and yield it
-        session_local = session()
-        yield session_local
+        session = TestDBSession()
+        yield session
     finally:
-        session_local.close()
+        session.close()
