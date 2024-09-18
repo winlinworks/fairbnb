@@ -10,7 +10,7 @@ client = TestClient(app)
 API_URL = "http://localhost:8000"
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def mock_user():
     return {
         "username": "john_doe",
@@ -20,6 +20,14 @@ def mock_user():
 
 
 class TestUser:
+    @pytest.fixture
+    def mock_get_user(self, mock_user):
+        return mock_user
+
+    @pytest.mark.skip(reason="WIP")
+    def test_get_user(self):
+        pass
+
     @pytest.mark.parametrize(
         "mock_user_changes,expected_status_code",
         [
@@ -29,7 +37,7 @@ class TestUser:
         ],
     )
     def test_post_user(self, mock_user, mock_user_changes, expected_status_code):
-        user = mock_user.copy()
+        user = mock_user
         user.update(mock_user_changes)
 
         endpoint = f"{API_URL}/users"
@@ -38,15 +46,16 @@ class TestUser:
         assert response.status_code == expected_status_code  # noqa: S101
 
     @pytest.fixture
-    def mock_update_user(self):
-        return {
-            "id": 1,
-            "username": "john_doe",
-            "email": "john@example.com",
-            "password": "hashed_password_1",
-            "is_active": True,
-            "listings": [],
-        }
+    def mock_update_user(self, mock_user):
+        mock_update_user = mock_user.copy()
+        mock_update_user.update(
+            {
+                "id": 1,
+                "is_active": True,
+                "listings": [],
+            }
+        )
+        return mock_update_user
 
     @pytest.mark.parametrize(
         "mock_user_changes,expected_status_code",
@@ -133,3 +142,14 @@ class TestListing:
         response = client.post(listing_endpoint, json=listing)
 
         assert response.status_code == expected_status_code  # noqa: S101
+
+    @pytest.mark.skip(reason="WIP")
+    def test_read_listing(
+        self,
+        test_db,
+        mock_user,
+        mock_listing,
+        mock_listing_changes,
+        expected_status_code,
+    ):
+        pass
