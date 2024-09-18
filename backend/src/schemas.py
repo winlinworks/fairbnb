@@ -11,6 +11,14 @@ class ListingBase(BaseModel):
     count_ratings: int = Field(..., description="The count of ratings")
     nightly_price: float = Field(..., description="The nightly price of the listing")
 
+    @field_validator("name")
+    @classmethod
+    def name_must_not_be_empty(cls, v):
+        if v.strip() == "":
+            msg = "Listing name must not be an empty string"
+            raise ValueError(msg)
+        return v
+
 
 class ListingCreate(ListingBase):
     pass
@@ -24,7 +32,7 @@ class ListingRead(ListingBase):
         orm_mode = True
 
 
-# Pydanitc model for users
+# Pydantic model for users
 class UserBase(BaseModel):
     username: str = Field(..., description="The username of the user")
     email: EmailStr = Field(..., description="The email of the user")

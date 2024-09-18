@@ -1,15 +1,25 @@
 import pytest
 from fastapi.testclient import TestClient
 
+from src.crud import create_user
 from src.main import app, get_db
-from tests.conftest import get_test_db
+from src.schemas import UserCreate
+from tests.conftest import TestDBSession, get_test_db
 
-# Override the get_db dependency with get_test_db
+# Override the get_db() dependency with get_test_db
 app.dependency_overrides[get_db] = get_test_db
 
 client = TestClient(app)
 
 API_URL = "http://localhost:8000"
+
+
+@pytest.fixture(scope="function")
+def test_db():
+    """
+    Returns session for test DB for dependency injection in integration tests (e.g., creating users for listings)
+    """
+    return TestDBSession()
 
 
 @pytest.fixture
@@ -108,18 +118,30 @@ class TestListing:
         "mock_listing_changes,expected_status_code",
         [
             pytest.param({}, 200, id="Valid listing"),
-            # pytest.param({"name": ""}, 422, id="Missing name"),
+            pytest.param({"name": ""}, 422, id="Missing name"),
         ],
     )
     def test_post_listing(
-        self, mock_listing, mock_listing_changes, expected_status_code
+        self,
+        test_db,
+        mock_user,
+        mock_listing,
+        mock_listing_changes,
+        expected_status_code,
     ):
         listing = mock_listing.copy()
         listing.update(mock_listing_changes)
 
+        # Create a user and get ID
+        user = UserCreate(
+            username=mock_user["username"],
+            email=mock_user["email"],
+            password=mock_user["password"],
+        )
+        user = create_user(test_db, user)
+
         # Create a listing
-        user_id = 1
-        listing_endpoint = f"{API_URL}/users/{user_id}/listings"
+        listing_endpoint = f"{API_URL}/users/{user.id}/listings"
         response = client.post(listing_endpoint, json=listing)
 
         assert response.status_code == expected_status_code  # noqa: S101
