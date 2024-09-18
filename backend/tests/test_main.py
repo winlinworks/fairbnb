@@ -2,24 +2,12 @@ import pytest
 from fastapi.testclient import TestClient
 
 from src.crud import create_user
-from src.main import app, get_db
+from src.main import app
 from src.schemas import UserCreate
-from tests.conftest import TestDBSession, get_test_db
-
-# Override the get_db() dependency with get_test_db
-app.dependency_overrides[get_db] = get_test_db
 
 client = TestClient(app)
 
 API_URL = "http://localhost:8000"
-
-
-@pytest.fixture(scope="function")
-def test_db():
-    """
-    Returns session for test DB for dependency injection in integration tests (e.g., creating users for listings)
-    """
-    return TestDBSession()
 
 
 @pytest.fixture
