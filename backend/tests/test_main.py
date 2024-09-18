@@ -20,14 +20,6 @@ def mock_user():
 
 
 class TestUser:
-    @pytest.fixture
-    def mock_get_user(self, mock_user):
-        return mock_user
-
-    @pytest.mark.skip(reason="WIP")
-    def test_get_user(self):
-        pass
-
     @pytest.mark.parametrize(
         "mock_user_changes,expected_status_code",
         [
@@ -45,12 +37,29 @@ class TestUser:
 
         assert response.status_code == expected_status_code  # noqa: S101
 
+    @pytest.mark.parametrize(
+        "mock_user_id,expected_status_code",
+        [
+            pytest.param(1, 200, id="Valid user ID"),
+            pytest.param(0, 404, id="Invalid user ID"),
+        ],
+    )
+    def test_get_user(self, test_db, mock_user, mock_user_id, expected_status_code):
+        # Create a user
+        user = UserCreate(**mock_user)
+        user = create_user(test_db, user)
+
+        # Get the user
+        endpoint = f"{API_URL}/users/{mock_user_id}"
+        response = client.get(endpoint)
+
+        assert response.status_code == expected_status_code  # noqa: S101
+
     @pytest.fixture
     def mock_update_user(self, mock_user):
         mock_update_user = mock_user.copy()
         mock_update_user.update(
             {
-                "id": 1,
                 "is_active": True,
                 "listings": [],
             }
@@ -65,14 +74,27 @@ class TestUser:
             pytest.param({"email": ""}, 422, id="Update email: empty string"),
         ],
     )
-    def test_put_user(self, mock_update_user, mock_user_changes, expected_status_code):
+    def test_put_user(
+        self,
+        test_db,
+        mock_user,
+        mock_update_user,
+        mock_user_changes,
+        expected_status_code,
+    ):
+        # Update mock updated user
         update_user = mock_update_user.copy()
         update_user.update(mock_user_changes)
 
-        user_id = update_user["id"]
+        # Create a user
+        user = UserCreate(**mock_user)
+        user = create_user(test_db, user)
+
+        # Add the user ID to the update user
+        update_user["id"] = user.id
 
         # Update the user
-        endpoint = f"{API_URL}/users/{user_id}"
+        endpoint = f"{API_URL}/users/{user.id}"
         response = client.put(endpoint, json=update_user)
 
         # If the update of valid email was successful, check the email
@@ -82,16 +104,13 @@ class TestUser:
         # Check the status code
         assert response.status_code == expected_status_code  # noqa: S101
 
-    def test_delete_user(self, mock_user):
+    def test_delete_user(self, test_db, mock_user):
         # Create a user
-        endpoint = f"{API_URL}/users"
-        response = client.post(endpoint, json=mock_user)
-
-        # Get the user ID
-        user_id = response.json()["id"]
+        user = UserCreate(**mock_user)
+        user = create_user(test_db, user)
 
         # Delete the user
-        endpoint = f"{API_URL}/users/{user_id}"
+        endpoint = f"{API_URL}/users/{user.id}"
         response = client.delete(endpoint)
 
         assert response.status_code == 200  # noqa: S101
