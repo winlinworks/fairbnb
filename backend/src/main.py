@@ -9,6 +9,7 @@ from src.crud import (
     create_listing,
     create_user,
     delete_user,
+    read_listing,
     read_listings,
     read_user,
     read_user_by_email,
@@ -89,7 +90,7 @@ def get_listings(skip: int = 0, limit: int = 100, db: Session = Depends(get_db))
 
 @app.get("/listings/{listing_id}", response_model=ListingRead)
 def get_listing(listing_id: int, db: Session = Depends(get_db)):
-    db_listing = read_listings(db, listing_id)
+    db_listing = read_listing(db, listing_id)
     if db_listing is None:
         raise HTTPException(status_code=404, detail="Listing not found")
     return db_listing

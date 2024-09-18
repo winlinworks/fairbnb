@@ -1,9 +1,9 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from src.crud import create_user
+from src.crud import create_listing, create_user
 from src.main import app
-from src.schemas import UserCreate
+from src.schemas import ListingCreate, UserCreate
 
 client = TestClient(app)
 
@@ -158,13 +158,31 @@ class TestListing:
 
         assert response.status_code == expected_status_code  # noqa: S101
 
-    @pytest.mark.skip(reason="WIP")
-    def test_read_listing(
+    @pytest.mark.parametrize(
+        "mock_listing_id,expected_status_code",
+        [
+            pytest.param(1, 200, id="Valid listing ID"),
+            pytest.param(0, 404, id="Invalid listing ID"),
+        ],
+    )
+    def test_get_listing(
         self,
         test_db,
         mock_user,
         mock_listing,
-        mock_listing_changes,
+        mock_listing_id,
         expected_status_code,
     ):
-        pass
+        # Create a user
+        user = UserCreate(**mock_user)
+        user = create_user(test_db, user)
+
+        # Create a listing
+        listing = ListingCreate(**mock_listing)
+        listing = create_listing(test_db, listing, user.id)
+
+        # Get the listing
+        endpoint = f"{API_URL}/listings/{mock_listing_id}"
+        response = client.get(endpoint)
+
+        assert response.status_code == expected_status_code  # noqa: S101

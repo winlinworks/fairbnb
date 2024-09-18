@@ -53,7 +53,7 @@ def delete_user(db: Session, user_id: int):
 # Listing CRUD ops
 
 
-def create_listing(db: Session, listing: ListingCreate, user_id: int):
+def create_listing(db: Session, listing: ListingCreate, user_id: int) -> Listing:
     db_listing = Listing(**listing.model_dump(), owner_id=user_id)
     db.add(db_listing)
     db.commit()
