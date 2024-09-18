@@ -15,7 +15,7 @@ from src.crud import (
     read_users,
     update_user,
 )
-from src.db import DBSession
+from src.db import get_db
 from src.schemas import ListingCreate, ListingRead, UserCreate, UserRead
 
 logger = logging.getLogger(__name__)
@@ -34,15 +34,6 @@ async def lifespan(app: FastAPI):  # noqa: ARG001
 
 
 app = FastAPI(lifespan=lifespan)
-
-
-# Dependency to get the database session
-def get_db():
-    session = DBSession()
-    try:
-        yield session
-    finally:
-        session.close()
 
 
 @app.post("/users/", response_model=UserRead)

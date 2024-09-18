@@ -20,8 +20,18 @@ DB_URL = URL.create(
     database=POSTGRES_DB,
 )
 
+
 # Create the SQLAlchemy engine
 engine = create_engine(DB_URL)
 
 # Create a local session class to create session instances
 DBSession = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+# Dependency to get the database session
+def get_db():
+    session = DBSession()
+    try:
+        yield session
+    finally:
+        session.close()
