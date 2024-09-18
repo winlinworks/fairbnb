@@ -129,12 +129,8 @@ class TestListing:
         listing = mock_listing.copy()
         listing.update(mock_listing_changes)
 
-        # Create a user and get ID
-        user = UserCreate(
-            username=mock_user["username"],
-            email=mock_user["email"],
-            password=mock_user["password"],
-        )
+        # Create a user
+        user = UserCreate(**mock_user)
         user = create_user(test_db, user)
 
         # Create a listing
