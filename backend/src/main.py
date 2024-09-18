@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from src.crud import (
     create_listing,
     create_user,
+    delete_listing,
     delete_user,
     read_listing,
     read_listings,
@@ -104,3 +105,13 @@ def put_listing(listing_id: int, listing: ListingRead, db: Session = Depends(get
         return create_listing(db, listing)
 
     return update_listing(db, listing_id, listing)
+
+
+@app.delete("/listings/{listing_id}")
+def remove_listing(listing_id: int, db: Session = Depends(get_db)):
+    db_listing = read_listing(db, listing_id)
+    if db_listing is None:
+        raise HTTPException(status_code=404, detail="Listing not found")
+
+    delete_listing(db, listing_id)
+    return {"message": "Listing deleted"}

@@ -236,3 +236,18 @@ class TestListing:
 
         # Check the status code
         assert response.status_code == expected_status_code  # noqa: S101
+
+    def test_delete_listing(self, test_db, mock_user, mock_listing):
+        # Create a user
+        user = UserCreate(**mock_user)
+        user = create_user(test_db, user)
+
+        # Create a listing
+        listing = ListingCreate(**mock_listing)
+        listing = create_listing(test_db, listing, user.id)
+
+        # Delete the listing
+        endpoint = f"{API_URL}/listings/{listing.id}"
+        response = client.delete(endpoint)
+
+        assert response.status_code == 200  # noqa: S101

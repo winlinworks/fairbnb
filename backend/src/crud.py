@@ -82,3 +82,10 @@ def update_listing(
     db.commit()
     db.refresh(db_listing)
     return db_listing
+
+
+def delete_listing(db: Session, listing_id: int):
+    db_listing = read_listing(db, listing_id)
+    db.delete(db_listing)
+    db.commit()
+    return {"message": "Listing deleted"}
