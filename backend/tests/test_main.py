@@ -237,7 +237,16 @@ class TestListing:
         # Check the status code
         assert response.status_code == expected_status_code  # noqa: S101
 
-    def test_delete_listing(self, test_db, mock_user, mock_listing):
+    @pytest.mark.parametrize(
+        "mock_listing_id,expected_status_code",
+        [
+            pytest.param(1, 200, id="Delete valid ID"),
+            pytest.param(0, 404, id="Delete invalid ID"),
+        ],
+    )
+    def test_delete_listing(
+        self, test_db, mock_user, mock_listing, mock_listing_id, expected_status_code
+    ):
         # Create a user
         user = UserCreate(**mock_user)
         user = create_user(test_db, user)
@@ -247,7 +256,7 @@ class TestListing:
         listing = create_listing(test_db, listing, user.id)
 
         # Delete the listing
-        endpoint = f"{API_URL}/listings/{listing.id}"
+        endpoint = f"{API_URL}/listings/{mock_listing_id}"
         response = client.delete(endpoint)
 
-        assert response.status_code == 200  # noqa: S101
+        assert response.status_code == expected_status_code  # noqa: S101
