@@ -25,7 +25,7 @@ DB_URL = URL.create(
 engine = create_engine(DB_URL)
 
 # Create a local session class to create session instances
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+DBSession = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Define the base class for declarative models
 Base = declarative_base()

@@ -15,7 +15,7 @@ from src.crud import (
     read_users,
     update_user,
 )
-from src.db import SessionLocal
+from src.db import DBSession
 from src.schemas import ListingCreate, ListingRead, UserCreate, UserRead
 
 logger = logging.getLogger(__name__)
@@ -38,11 +38,11 @@ app = FastAPI(lifespan=lifespan)
 
 # Dependency to get the database session
 def get_db():
-    db = SessionLocal()
+    session = DBSession()
     try:
-        yield db
+        yield session
     finally:
-        db.close()
+        session.close()
 
 
 @app.post("/users/", response_model=UserRead)
