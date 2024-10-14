@@ -1,5 +1,3 @@
-import os
-
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -8,14 +6,8 @@ from src.db import get_engine
 from src.main import app
 from src.models import Base
 
-TEST_DB = "test_db.sqlite"
-
-# Remove sqlite db file if it exists
-if os.path.exists(TEST_DB):
-    os.remove(TEST_DB)
-
 # URL for test DB (sqlite in-memory)
-TEST_DB_URL = f"sqlite:///{TEST_DB}"
+TEST_DB_URL = "sqlite:///:memory:"
 
 # Test DB engine
 test_engine = create_engine(TEST_DB_URL)
