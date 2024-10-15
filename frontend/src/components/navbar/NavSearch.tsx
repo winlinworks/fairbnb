@@ -1,6 +1,6 @@
 import React from "react";
-import { Input } from "../input";
-import { DatePickerWithRange } from "../date-picker";
+import { Input } from "../ui/input";
+import { DatePickerWithRange } from "../ui/date-picker";
 
 function NavSearch() {
   return (
