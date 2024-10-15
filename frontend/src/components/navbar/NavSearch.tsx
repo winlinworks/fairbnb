@@ -1,6 +1,6 @@
 import React from "react";
-import { Input } from "../input";
-import { DatePickerWithRange } from "../date-picker";
+import { Input } from "../ui/input";
+import { DatePickerWithRange } from "../ui/date-picker";
 
 function NavSearch() {
   return (
@@ -10,7 +10,7 @@ function NavSearch() {
         placeholder="where are you going?"
         className="max-w-xs dark:bg-muted"
       ></Input>
-      <DatePickerWithRange />
+      {/* <DatePickerWithRange /> */}
     </>
   );
 }

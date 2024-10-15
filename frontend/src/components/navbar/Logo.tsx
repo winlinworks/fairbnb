@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { TbTent } from "react-icons/tb";
-import { Button } from "../button";
+import { Button } from "../ui/button";
 
 function Logo() {
   return (
