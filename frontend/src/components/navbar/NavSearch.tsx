@@ -10,7 +10,7 @@ function NavSearch() {
         placeholder="where are you going?"
         className="max-w-xs dark:bg-muted"
       ></Input>
-      <DatePickerWithRange />
+      {/* <DatePickerWithRange /> */}
     </>
   );
 }

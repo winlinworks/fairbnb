@@ -9,7 +9,11 @@ import { formatCurrency } from "@/utils/format";
 
 function PropertyCard({ property }: { property: PropertyCardProps }) {
   const { name, image, price } = property;
-  const { country, id: propertyId, tagline } = property;
+  const {
+    // country,
+    id: propertyId,
+    tagline,
+  } = property;
 
   return (
     <article className="group relative">
@@ -37,7 +41,7 @@ function PropertyCard({ property }: { property: PropertyCardProps }) {
             <span className="font-semibold">{formatCurrency(price)} </span>
             night
           </p>
-          <CountryFlagAndName countryCode={country} />
+          {/* <CountryFlagAndName countryCode={country} /> */}
         </div>
       </Link>
       <div className="absolute top-5 right-5 z-5">

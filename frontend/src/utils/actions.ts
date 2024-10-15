@@ -36,7 +36,7 @@ export const fetchProperties = async ({
       id: true,
       name: true,
       tagline: true,
-      country: true,
+      location: true,
       image: true,
       price: true,
     },
