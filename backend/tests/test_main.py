@@ -32,7 +32,7 @@ class TestUser:
         user = mock_user
         user.update(mock_user_changes)
 
-        endpoint = f"{API_URL}/users"
+        endpoint = "/users"
         response = client.post(endpoint, json=user)
 
         assert response.status_code == expected_status_code  # noqa: S101
@@ -50,7 +50,7 @@ class TestUser:
         user = create_user(test_db, user)
 
         # Get the user
-        endpoint = f"{API_URL}/users/{mock_user_id}"
+        endpoint = f"/users/{mock_user_id}"
         response = client.get(endpoint)
 
         assert response.status_code == expected_status_code  # noqa: S101
@@ -94,7 +94,7 @@ class TestUser:
         update_user["id"] = user.id
 
         # Update the user
-        endpoint = f"{API_URL}/users/{user.id}"
+        endpoint = f"/users/{user.id}"
         response = client.put(endpoint, json=update_user)
 
         # If the update of valid email was successful, check the email
@@ -117,7 +117,7 @@ class TestUser:
         user = create_user(test_db, user)
 
         # Delete the user
-        endpoint = f"{API_URL}/users/{mock_user_id}"
+        endpoint = f"/users/{mock_user_id}"
         response = client.delete(endpoint)
 
         assert response.status_code == expected_status_code  # noqa: S101
@@ -160,7 +160,7 @@ class TestListing:
         user = create_user(test_db, user)
 
         # Create a listing
-        listing_endpoint = f"{API_URL}/users/{user.id}/listings"
+        listing_endpoint = f"/users/{user.id}/listings"
         response = client.post(listing_endpoint, json=listing)
 
         assert response.status_code == expected_status_code  # noqa: S101
@@ -189,7 +189,7 @@ class TestListing:
         listing = create_listing(test_db, listing, user.id)
 
         # Get the listing
-        endpoint = f"{API_URL}/listings/{mock_listing_id}"
+        endpoint = f"/listings/{mock_listing_id}"
         response = client.get(endpoint)
 
         assert response.status_code == expected_status_code  # noqa: S101
@@ -234,7 +234,7 @@ class TestListing:
         update_listing["owner_id"] = user.id
 
         # Update the listing
-        endpoint = f"{API_URL}/listings/{listing.id}"
+        endpoint = f"/listings/{listing.id}"
         response = client.put(endpoint, json=update_listing)
 
         # If the update of valid email was successful, check the email
@@ -263,7 +263,7 @@ class TestListing:
         listing = create_listing(test_db, listing, user.id)
 
         # Delete the listing
-        endpoint = f"{API_URL}/listings/{mock_listing_id}"
+        endpoint = f"/listings/{mock_listing_id}"
         response = client.delete(endpoint)
 
         assert response.status_code == expected_status_code  # noqa: S101
