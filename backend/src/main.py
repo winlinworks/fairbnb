@@ -65,7 +65,7 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
 def put_user(user_id: int, user: UserRead, db: Session = Depends(get_db)):
     db_user = read_user(db, user_id)
     if db_user is None:
-        return create_user(db, user)
+        raise HTTPException(status_code=404, detail=f"User ID {user_id} not found")
 
     return update_user(db, user_id, user)
 
@@ -103,7 +103,9 @@ def get_listing(listing_id: int, db: Session = Depends(get_db)):
 def put_listing(listing_id: int, listing: ListingRead, db: Session = Depends(get_db)):
     db_listing = read_listing(db, listing_id)
     if db_listing is None:
-        return create_listing(db, listing)
+        raise HTTPException(
+            status_code=404, detail=f"Listing ID {listing_id} not found"
+        )
 
     return update_listing(db, listing_id, listing)
 
