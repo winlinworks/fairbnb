@@ -57,7 +57,7 @@ def get_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 def get_user(user_id: int, db: Session = Depends(get_db)):
     db_user = read_user(db, user_id)
     if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail=f"User ID {user_id} not found")
     return db_user
 
 
@@ -74,10 +74,9 @@ def put_user(user_id: int, user: UserRead, db: Session = Depends(get_db)):
 def remove_user(user_id: int, db: Session = Depends(get_db)):
     db_user = read_user(db, user_id)
     if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail=f"User ID {user_id} not found")
 
-    delete_user(db, user_id)
-    return {"message": "User deleted"}
+    return delete_user(db, user_id)
 
 
 @app.post("/users/{user_id}/listings", response_model=ListingRead)
@@ -94,7 +93,9 @@ def get_listings(skip: int = 0, limit: int = 100, db: Session = Depends(get_db))
 def get_listing(listing_id: int, db: Session = Depends(get_db)):
     db_listing = read_listing(db, listing_id)
     if db_listing is None:
-        raise HTTPException(status_code=404, detail="Listing not found")
+        raise HTTPException(
+            status_code=404, detail=f"Listing ID {listing_id} not found"
+        )
     return db_listing
 
 
@@ -111,7 +112,8 @@ def put_listing(listing_id: int, listing: ListingRead, db: Session = Depends(get
 def remove_listing(listing_id: int, db: Session = Depends(get_db)):
     db_listing = read_listing(db, listing_id)
     if db_listing is None:
-        raise HTTPException(status_code=404, detail="Listing not found")
+        raise HTTPException(
+            status_code=404, detail=f"Listing ID {listing_id} not found"
+        )
 
-    delete_listing(db, listing_id)
-    return {"message": "Listing deleted"}
+    return delete_listing(db, listing_id)
