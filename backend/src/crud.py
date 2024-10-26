@@ -47,7 +47,7 @@ def delete_user(db: Session, user_id: int):
     db_user = read_user(db, user_id)
     db.delete(db_user)
     db.commit()
-    return {"message": "User deleted"}
+    return {"message": "User deleted", "user_id": user_id}
 
 
 # Listing CRUD ops
@@ -88,4 +88,4 @@ def delete_listing(db: Session, listing_id: int):
     db_listing = read_listing(db, listing_id)
     db.delete(db_listing)
     db.commit()
-    return {"message": "Listing deleted"}
+    return {"message": "Listing deleted", "listing_id": listing_id}
