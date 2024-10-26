@@ -1,6 +1,5 @@
 from sqlalchemy import Boolean, Column, Float, ForeignKey, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import declarative_base, relationship
 
 # Define the base class for declarative models
 Base = declarative_base()

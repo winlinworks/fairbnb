@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 
 # Pydantic model for listings
@@ -28,8 +28,7 @@ class ListingRead(ListingBase):
     id: int = Field(..., description="The ID of the listing")
     owner_id: int = Field(..., description="The ID of the owner")
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Pydantic model for users
@@ -55,5 +54,4 @@ class UserRead(UserBase):
     is_active: bool = Field(..., description="The active status of the user")
     listings: list[ListingRead] = []
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
