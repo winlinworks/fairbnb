@@ -80,12 +80,12 @@ def remove_user(user_id: int, db: Session = Depends(get_db)):
     return {"message": "User deleted"}
 
 
-@app.post("/users/{user_id}/listings/", response_model=ListingRead)
+@app.post("/users/{user_id}/listings", response_model=ListingRead)
 def post_listing(user_id: int, listing: ListingCreate, db: Session = Depends(get_db)):
     return create_listing(db, listing, user_id)
 
 
-@app.get("/listings/", response_model=list[ListingRead])
+@app.get("/listings", response_model=list[ListingRead])
 def get_listings(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return read_listings(db, skip, limit)
 
