@@ -39,7 +39,7 @@ async def lifespan(app: FastAPI):  # noqa: ARG001
 app = FastAPI(lifespan=lifespan)
 
 
-@app.post("/users/", response_model=UserRead)
+@app.post("/users", response_model=UserRead)
 def post_user(user: UserCreate, db: Session = Depends(get_db)):
     db_user = read_user_by_email(db, user.email)
 
@@ -48,7 +48,7 @@ def post_user(user: UserCreate, db: Session = Depends(get_db)):
     return create_user(db, user)
 
 
-@app.get("/users/", response_model=list[UserRead])
+@app.get("/users", response_model=list[UserRead])
 def get_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return read_users(db, skip, limit)
 
