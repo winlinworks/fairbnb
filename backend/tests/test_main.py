@@ -7,8 +7,6 @@ from src.schemas import ListingCreate, UserCreate
 
 client = TestClient(app)
 
-API_URL = "http://localhost:8000"
-
 
 @pytest.fixture(scope="function")
 def mock_user():
