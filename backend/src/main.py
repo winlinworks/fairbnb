@@ -2,6 +2,7 @@ import logging
 import sys
 from contextlib import asynccontextmanager
 
+from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 
@@ -20,6 +21,8 @@ from src.crud import (
 )
 from src.db import get_db
 from src.schemas import ListingCreate, ListingRead, UserCreate, UserRead
+
+load_dotenv()
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
