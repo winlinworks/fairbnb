@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 
 # Pydantic model for listings
@@ -11,20 +11,27 @@ class ListingBase(BaseModel):
     count_ratings: int = Field(..., description="The count of ratings")
     nightly_price: float = Field(..., description="The nightly price of the listing")
 
+    @field_validator("name")
+    @classmethod
+    def name_must_not_be_empty(cls, v):
+        if v.strip() == "":
+            msg = "Listing name must not be an empty string"
+            raise ValueError(msg)
+        return v
+
 
 class ListingCreate(ListingBase):
     pass
 
 
-class Listing(ListingBase):
+class ListingRead(ListingBase):
     id: int = Field(..., description="The ID of the listing")
     owner_id: int = Field(..., description="The ID of the owner")
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
-# Pydanitc model for users
+# Pydantic model for users
 class UserBase(BaseModel):
     username: str = Field(..., description="The username of the user")
     email: EmailStr = Field(..., description="The email of the user")
@@ -42,10 +49,9 @@ class UserCreate(UserBase):
     password: str = Field(..., description="The password of the user")
 
 
-class User(UserBase):
-    id: int = Field(..., description="The ID of the user")
+class UserRead(UserBase):
+    id: int | None = Field(..., description="The ID of the user")
     is_active: bool = Field(..., description="The active status of the user")
-    listings: list[Listing] = []
+    listings: list[ListingRead] = []
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
