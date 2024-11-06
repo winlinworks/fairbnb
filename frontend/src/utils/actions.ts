@@ -2,7 +2,7 @@
 
 import { profileSchema } from "./schemas";
 
-const MockProperty = [
+const mockProperty = [
   {
     id: 1,
     name: "property-1",
@@ -56,8 +56,8 @@ export const createProfileAction = async (
 ) => {
   try {
     const rawData = Object.fromEntries(formData);
-    const validedFields = profileSchema.parse(rawData);
-    console.log(validedFields);
+    const validatedFields = profileSchema.parse(rawData);
+    console.log(validatedFields);
     return { message: "profile created" };
   } catch (error) {
     console.log(error);
@@ -72,6 +72,6 @@ export const fetchProperties = async ({
   search?: string;
   category?: string;
 }) => {
-  const properties = MockProperty;
+  const properties = mockProperty;
   return properties;
 };
