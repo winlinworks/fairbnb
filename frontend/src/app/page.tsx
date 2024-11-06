@@ -15,11 +15,11 @@ function HomePage({
         category={searchParams?.category}
         search={searchParams.search}
       />
-      <LoadingCards />
-      {/* <PropertgiesContainer
-      category={searchParams?.category}
-      search={searchParams.search}
-      /> */}
+      {/* <LoadingCards /> */}
+      <PropertgiesContainer
+        category={searchParams?.category}
+        search={searchParams.search}
+      />
     </section>
   );
 }
