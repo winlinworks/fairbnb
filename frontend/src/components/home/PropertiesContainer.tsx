@@ -4,7 +4,7 @@ import PropertiesList from "./PropertiesList";
 import EmptyList from "./EmptyList";
 import type { PropertyCardProps } from "@/utils/types";
 
-async function PropertgiesContainer({
+async function PropertiesContainer({
   category,
   search,
 }: {
@@ -28,4 +28,4 @@ async function PropertgiesContainer({
   return <PropertiesList properties={properties} />;
 }
 
-export default PropertgiesContainer;
+export default PropertiesContainer;
