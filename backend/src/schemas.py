@@ -3,13 +3,11 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 # Pydantic model for listings
 class ListingBase(BaseModel):
-    name: str = Field(..., description="The name of the listing")
-    description: str = Field(..., description="The description of the listing")
-    beds: int = Field(..., description="The number of beds")
-    bedrooms: int = Field(..., description="The number of bedrooms")
-    mean_rating: float = Field(..., description="The mean rating of the listing")
-    count_ratings: int = Field(..., description="The count of ratings")
-    nightly_price: float = Field(..., description="The nightly price of the listing")
+    name: str = Field(..., description="Name of listing")
+    tagline: str = Field(..., description="Tagline of listing")
+    location: str = Field(..., description="City and state of listing")
+    image: str = Field(..., description="URL of listing image")
+    price: float = Field(..., description="Nightly price of listing")
 
     @field_validator("name")
     @classmethod

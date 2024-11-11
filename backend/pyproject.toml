@@ -31,3 +31,10 @@ ignore = [
     "D203", # Disable one-blank-line-before-class incompatible with ruff format
     "D212", # Disable multi-line-summary-first-line incompatible with ruff format
 ]
+
+[tool.pytest.ini_options]
+addopts = [
+    "-v",
+    "-ra",
+    "-s"
+]
