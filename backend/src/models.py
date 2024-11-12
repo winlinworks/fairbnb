@@ -24,12 +24,10 @@ class Listing(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
-    description = Column(String, nullable=False)
-    beds = Column(Integer, nullable=False)
-    bedrooms = Column(Integer, nullable=False)
-    mean_rating = Column(Float, nullable=False)
-    count_ratings = Column(Integer, nullable=False)
-    nightly_price = Column(Float, nullable=False)
+    tagline = Column(String, nullable=False)
+    location = Column(String, nullable=False)
+    image = Column(String, nullable=False)
+    price = Column(Float, nullable=False)
     owner_id = Column(Integer, ForeignKey("users.id"))
 
     owner = relationship("User", back_populates="listings")

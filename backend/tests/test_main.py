@@ -125,12 +125,10 @@ class TestUser:
 def mock_listing():
     return {
         "name": "Cozy Cottage",
-        "description": "A cozy cottage in the countryside.",
-        "beds": 2,
-        "bedrooms": 1,
-        "mean_rating": 4.5,
-        "count_ratings": 10,
-        "nightly_price": 100.0,
+        "tagline": "A cozy cottage in the countryside.",
+        "location": "Houston, TX",
+        "image": "https://example.com/image.jpg",
+        "price": 100.0,
     }
 
 
