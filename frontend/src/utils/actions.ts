@@ -1,54 +1,10 @@
 "use server";
 
 import { profileSchema } from "./schemas";
+import axios from "axios";
 
-const mockProperty = [
-  {
-    id: 1,
-    name: "property-1",
-    tagline: "this is property 1",
-    location: "Houston, TX",
-    image:
-      "https://a0.muscache.com/im/pictures/2adf6ef9-e131-431b-a34e-9566e768f509.jpg?im_w=1200",
-    price: 314,
-  },
-  {
-    id: 2,
-    name: "property-2",
-    tagline: "this is property 2",
-    location: "Houston, TX",
-    image:
-      "https://a0.muscache.com/im/pictures/2f53e928-a91e-464c-b69f-14eff28a3b85.jpg?im_w=960",
-    price: 263,
-  },
-  {
-    id: 3,
-    name: "property-3",
-    tagline: "this is property 3",
-    location: "Houston, TX",
-    image:
-      "https://a0.muscache.com/im/pictures/d1db0b4a-9830-42e2-875d-0d41820ca4e3.jpg?im_w=960",
-    price: 180,
-  },
-  {
-    id: 4,
-    name: "property-4",
-    tagline: "this is property 4",
-    location: "Houston, TX",
-    image:
-      "https://a0.muscache.com/im/pictures/d1db0b4a-9830-42e2-875d-0d41820ca4e3.jpg?im_w=960",
-    price: 180,
-  },
-  {
-    id: 5,
-    name: "property-5",
-    tagline: "this is property 5",
-    location: "Houston, TX",
-    image:
-      "https://a0.muscache.com/im/pictures/d1db0b4a-9830-42e2-875d-0d41820ca4e3.jpg?im_w=960",
-    price: 180,
-  },
-];
+// Define the API endpoint
+const API_URL = 'http://backend:8000';
 
 export const createProfileAction = async (
   prevState: any,
@@ -72,6 +28,22 @@ export const fetchProperties = async ({
   search?: string;
   category?: string;
 }) => {
-  const properties = mockProperty;
+  const properties = getListings("1");
   return properties;
 };
+
+// Function to get listings data from the API
+async function getListings(
+  userId: string,
+) {
+  const listingsUrl = `${API_URL}/listings`;
+
+  // Get listings from the API and return them, or return an empty array if there's an error
+  try {
+    const response = await axios.get(listingsUrl);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching properties:', error);
+    return [];
+  }
+}
