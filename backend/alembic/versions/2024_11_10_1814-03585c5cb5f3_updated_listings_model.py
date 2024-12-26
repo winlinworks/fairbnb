@@ -40,7 +40,7 @@ def upgrade() -> None:
         ),
     )
     op.add_column(
-        "listings", sa.Column("price", sa.Float(), server_default=0.0, nullable=False)
+        "listings", sa.Column("price", sa.Float(), default=0.0, nullable=False)
     )
     op.drop_column("listings", "description")
     op.drop_column("listings", "bedrooms")
