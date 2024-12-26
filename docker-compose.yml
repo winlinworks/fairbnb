@@ -6,9 +6,13 @@ services:
       target: dev
     restart: always
     command: npm run dev
+    develop:
+      watch:
+        - path: ./frontend/package-lock.json
+          action: rebuild
     environment:
       - NODE_ENV=development
-      #- WATCHPACK_POLLING=true
+      - WATCHPACK_POLLING=true
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -29,8 +33,12 @@ services:
       watch:
         - path: ./backend/poetry.lock
           action: rebuild
-    # environment:
-    #   - DB_URL=thing
+    environment:
+      POSTGRES_DB: devdatabase
+      POSTGRES_USER: devdbuser
+      POSTGRES_PASS: secretSquirrel1984
+      POSTGRES_PORT: 5432
+      POSTGRES_HOST: db
     ports:
       - "8000:8000"
     volumes:
