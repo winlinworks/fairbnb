@@ -5,7 +5,7 @@ export type actionFunction = (
 
 export type PropertyCardProps = {
   image: string;
-  id: string;
+  id: number;
   name: string;
   tagline: string;
   location: string;
