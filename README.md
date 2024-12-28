@@ -1,6 +1,9 @@
 # fairbnb
 Welcome to Fairbnb, a clone of Airbnb.
 
+## Get started
+To access tools for communication, planning, design, and project management, visit our [Knowledge Base](https://winlin.atlassian.net/wiki/spaces/Fairbnb/overview?homepageId=246579754).
+
 ## Set up local dev environment
 To load virtual environment in your shell, run `poetry shell`. Dependencies for the app are included in the `poetry.lock` and `pyproject.toml` files. You can also load the virtual environment separately for each command by running `poetry run {your command}`.
 
