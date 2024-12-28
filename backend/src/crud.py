@@ -72,7 +72,7 @@ def read_listings(db: Session, skip: int = 0, limit: int = 100) -> list[Listing]
 def update_listing(
     db: Session, listing_id: int, new_listing_data: ListingRead
 ) -> Listing:
-    db_listing = read_user(db, listing_id)
+    db_listing = read_listing(db, listing_id)
 
     # Update user fields
     update_record(db_listing, new_listing_data)
