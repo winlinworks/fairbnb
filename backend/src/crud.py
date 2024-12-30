@@ -74,7 +74,7 @@ def update_listing(
 ) -> Listing:
     db_listing = read_listing(db, listing_id)
 
-    # Update user fields
+    # Update listing fields
     update_record(db_listing, new_listing_data)
 
     # Save changes
