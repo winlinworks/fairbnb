@@ -1,4 +1,5 @@
 import PropertyRating from "@/components/card/PropertyRating";
+import BookingCalendar from "@/components/Properties/BookingCalendar";
 import BreadCrumbs from "@/components/Properties/BreadCrumbs";
 import ImageContainer from "@/components/Properties/ImageContainer";
 import ShareButton from "@/components/Properties/ShareButton";
@@ -32,7 +33,7 @@ async function PropertyDetailsPage({ params }: { params: { id: number } }) {
           </div>
         </div>
         <div className="lg:col-span-4 flex flex-col items-center">
-          {/* calendar */}
+          <BookingCalendar />
         </div>
         <div className="lg:col-span-8"></div>
       </section>
