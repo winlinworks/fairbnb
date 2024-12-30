@@ -1,6 +1,7 @@
 "use server";
 
 import { profileSchema } from "./schemas";
+import { PropertyCardProps } from "./types";
 
 export const createProfileAction = async (
   prevState: any,
@@ -25,11 +26,31 @@ export const fetchProperties = async ({
   category?: string;
 }) => {
   const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/listings`, {
-    cache: 'no-store'
+    cache: "no-store",
   });
   const posts = await data.json();
 
-  // const properties = mockProperty;
-  const properties = posts
+  // const properties = await posts.property.findMany(
+  //   {
+  //     where:{
+  //       category,
+  //       OR:[
+  //         {name:{contains:search,mode:'insensitive'}},
+  //         {tagline:{contains:search,mode:'insensitive'}}
+  //       ]
+  //     },
+  //     select:{
+  //       id: true,
+  //       name: true,
+  //       tagline: true,
+  //       country: true,
+  //       image: true,
+  //       price: true,
+  //     }
+  //   }
+  // )
+
+  const properties = posts;
+
   return properties;
 };
