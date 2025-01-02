@@ -190,10 +190,6 @@ class TestListing:
 
         assert response.status_code == expected_status_code  # noqa: S101
 
-    @pytest.fixture
-    def mock_update_listing(self, mock_listing):
-        return mock_listing.copy()
-
     @pytest.mark.parametrize(
         "mock_listing_changes,expected_status_code",
         [
@@ -202,6 +198,8 @@ class TestListing:
                 {"name": "A cozy house in the country"}, 200, id="Update valid name"
             ),
             pytest.param({"name": ""}, 422, id="Update invalid name"),
+            pytest.param({"id": 0, "owner_id": 1}, 404, id="Listing not found"),
+            pytest.param({"id": 1, "owner_id": 0}, 404, id="Owner not found"),
         ],
     )
     def test_update_listing(
@@ -209,7 +207,6 @@ class TestListing:
         test_db,
         mock_user,
         mock_listing,
-        mock_update_listing,
         mock_listing_changes,
         expected_status_code,
     ):
@@ -221,21 +218,22 @@ class TestListing:
         listing = ListingCreate(**mock_listing)
         listing = create_listing(test_db, listing, user.id)
 
-        # Update the mock updated listing
-        update_listing = mock_update_listing.copy()
-        update_listing.update(mock_listing_changes)
+        # Update the mock updated listing for test case
+        updated_listing = mock_listing.copy()
+        updated_listing.update(mock_listing_changes)
 
-        # Add the listing ID and owner ID to the update user
-        update_listing["id"] = listing.id
-        update_listing["owner_id"] = user.id
+        # If test case is for valid listing and user records (not expecting 404 status code), match listing ID and owner ID of the updated listing to created listing
+        if expected_status_code != 404:
+            updated_listing["id"] = listing.id
+            updated_listing["owner_id"] = user.id
 
         # Update the listing
         endpoint = f"/listings/{listing.id}"
-        response = client.put(endpoint, json=update_listing)
+        response = client.put(endpoint, json=updated_listing)
 
-        # If the update of valid email was successful, check the email
+        # If the update of valid listing was successful, check the name
         if expected_status_code == 200:
-            assert response.json()["name"] == update_listing["name"]  # noqa: S101
+            assert response.json()["name"] == updated_listing["name"]  # noqa: S101
 
         # Check the status code
         assert response.status_code == expected_status_code  # noqa: S101

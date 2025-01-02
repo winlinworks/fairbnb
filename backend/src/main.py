@@ -104,6 +104,14 @@ def get_listing(listing_id: int, db: Session = Depends(get_db)):
 
 @app.put("/listings/{listing_id}", response_model=ListingRead)
 def put_listing(listing_id: int, listing: ListingRead, db: Session = Depends(get_db)):
+    # Verify if user exists
+    db_user = read_user(db, listing.owner_id)
+    if db_user is None:
+        raise HTTPException(
+            status_code=404, detail=f"User ID {listing.owner_id} not found"
+        )
+
+    # Verify if listing exists
     db_listing = read_listing(db, listing_id)
     if db_listing is None:
         raise HTTPException(
