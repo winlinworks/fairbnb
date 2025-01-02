@@ -17,7 +17,7 @@ function PropertyRating({
 
   return (
     <span className={className}>
-      <FaStar className="w-3 h-3" /> {rating} {countValue}
+      <FaStar className="w-3 h-3 self-center" /> {rating} {countValue}
     </span>
   );
 }
