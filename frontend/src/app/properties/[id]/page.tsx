@@ -1,18 +1,26 @@
 import PropertyRating from "@/components/card/PropertyRating";
 import BookingCalendar from "@/components/Properties/BookingCalendar";
 import BreadCrumbs from "@/components/Properties/BreadCrumbs";
+import Description from "@/components/Properties/Description";
 import ImageContainer from "@/components/Properties/ImageContainer";
+import PropertyDetails from "@/components/Properties/PropertyDetails";
 import ShareButton from "@/components/Properties/ShareButton";
-import { fetchPropertyDetails } from "@/lib/api/fetchData";
+import UserInfo from "@/components/Properties/UserInfo";
+import { Separator } from "@/components/ui/separator";
+import { fetchPropertyDetails, fetchUserInfo } from "@/lib/api/fetchData";
 import { log } from "console";
 import { setDefaultAutoSelectFamily } from "net";
 import { redirect } from "next/navigation";
 
 async function PropertyDetailsPage({ params }: { params: { id: number } }) {
   const property = await fetchPropertyDetails(params.id);
+  const user = await fetchUserInfo(property.ownerId);
   if (!property) redirect("/");
   const { baths, bedrooms, beds, guests } = property;
   const details = { baths, bedrooms, beds, guests };
+  //TODO:after data structure change, update the below code
+  const firstName = user.username;
+  const profileImage = user.email;
 
   return (
     <section>
@@ -31,6 +39,10 @@ async function PropertyDetailsPage({ params }: { params: { id: number } }) {
             <h1 className="text-xl font-bold">{property.name}</h1>
             <PropertyRating inPage propertyId={property.id} />
           </div>
+          <PropertyDetails details={details} />
+          <UserInfo profile={{ profileImage, firstName }} />
+          <Separator className="mt-4" />
+          {/* <Description description={property.description} /> */}
         </div>
         <div className="lg:col-span-4 flex flex-col items-center">
           <BookingCalendar />
