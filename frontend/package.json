@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "prettier": "prettier --write .",
-    "fake-api": "tsc && json-server dist/server.js"
+    "fake-api": "tsc --project tsconfig.mock-server.json && node dist/mock-data-generator.js && json-server src/mock/data.json --port 3100"
   },
   "dependencies": {
     "@clerk/nextjs": "^5.3.7",
@@ -39,7 +39,7 @@
   "devDependencies": {
     "@faker-js/faker": "^9.3.0",
     "@types/faker": "^6.6.8",
-    "@types/node": "^20",
+    "@types/node": "^20.17.12",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
