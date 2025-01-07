@@ -10,7 +10,7 @@ export const fetchPropertiesListings = async () => {
 
 export const fetchPropertyDetails = async (id: number) => {
   const data = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/listings/${id}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/propertyDetails/${id}`,
     { cache: "no-cache" }
   );
   const post = await data.json();
@@ -18,9 +18,12 @@ export const fetchPropertyDetails = async (id: number) => {
 };
 
 export const fetchUserInfo = async (id: number) => {
-  const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${id}`, {
-    cache: "no-cache",
-  });
+  const data = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/propertyDetails/${id}`,
+    {
+      cache: "no-cache",
+    }
+  );
   const user = await data.json();
   return user;
 };

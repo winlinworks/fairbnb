@@ -14,13 +14,13 @@ import { redirect } from "next/navigation";
 
 async function PropertyDetailsPage({ params }: { params: { id: number } }) {
   const property = await fetchPropertyDetails(params.id);
-  const user = await fetchUserInfo(property.ownerId);
+
   if (!property) redirect("/");
   const { baths, bedrooms, beds, guests } = property;
   const details = { baths, bedrooms, beds, guests };
-  //TODO:after data structure change, update the below code
-  const firstName = user.username;
-  const profileImage = user.email;
+
+  const firstName = property.username;
+  const profileImage = property.profileImage;
 
   return (
     <section>

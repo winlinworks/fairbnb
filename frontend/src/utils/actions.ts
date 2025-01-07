@@ -25,7 +25,7 @@ export const fetchProperties = async ({
   search?: string;
   category?: string;
 }) => {
-  const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/listings`, {
+  const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/properties`, {
     cache: "no-store",
   });
   const posts = await data.json();
