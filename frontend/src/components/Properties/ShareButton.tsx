@@ -17,8 +17,6 @@ import {
   LinkedinIcon,
 } from "react-share";
 
-import React from "react";
-
 function ShareButton({
   propertyId,
   name,
