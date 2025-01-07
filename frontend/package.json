@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prettier": "prettier --write ."
+    "prettier": "prettier --write .",
+    "fake-api": "tsc --project tsconfig.mock-server.json && node dist/mock-data-generator.js && json-server src/mock/data.json --port 8000"
   },
   "dependencies": {
     "@clerk/nextjs": "^5.3.7",
@@ -37,13 +38,16 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@faker-js/faker": "^9.3.0",
+    "@types/faker": "^6.6.8",
+    "@types/node": "^20.17.12",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/react-share": "^3.0.3",
     "eslint": "^8",
     "eslint-config-next": "14.2.6",
     "eslint-config-prettier": "^9.1.0",
+    "json-server": "^1.0.0-beta.3",
     "postcss": "^8",
     "prettier": "^3.3.3",
     "tailwindcss": "^3.4.1",
