@@ -8,8 +8,6 @@ import ShareButton from "@/components/Properties/ShareButton";
 import UserInfo from "@/components/Properties/UserInfo";
 import { Separator } from "@/components/ui/separator";
 import { fetchPropertyDetails, fetchUserInfo } from "@/lib/api/fetchData";
-import { log } from "console";
-import { setDefaultAutoSelectFamily } from "net";
 import { redirect } from "next/navigation";
 
 async function PropertyDetailsPage({ params }: { params: { id: number } }) {
@@ -19,7 +17,7 @@ async function PropertyDetailsPage({ params }: { params: { id: number } }) {
   const { baths, bedrooms, beds, guests } = property;
   const details = { baths, bedrooms, beds, guests };
 
-  const firstName = property.username;
+  const firstName = property.firstName;
   const profileImage = property.profileImage;
 
   return (
@@ -42,7 +40,7 @@ async function PropertyDetailsPage({ params }: { params: { id: number } }) {
           <PropertyDetails details={details} />
           <UserInfo profile={{ profileImage, firstName }} />
           <Separator className="mt-4" />
-          {/* <Description description={property.description} /> */}
+          <Description description={property.description} />
         </div>
         <div className="lg:col-span-4 flex flex-col items-center">
           <BookingCalendar />
