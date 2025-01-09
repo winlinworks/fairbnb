@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "prettier": "prettier --write .",
-    "fake-api": "tsc --project tsconfig.mock-server.json && node dist/mock-data-generator.js && json-server src/mock/data.json --port 8000"
+    "fake-api": "tsc --project tsconfig.mock-server.json && tsc-alias --project tsconfig.mock-server.json && node dist/mock/mock-data-generator.js && json-server src/mock/data.json --port 8000"
   },
   "dependencies": {
     "@clerk/nextjs": "^5.3.7",
@@ -51,6 +51,7 @@
     "postcss": "^8",
     "prettier": "^3.3.3",
     "tailwindcss": "^3.4.1",
+    "tsc-alias": "^1.8.10",
     "typescript": "^5"
   }
 }

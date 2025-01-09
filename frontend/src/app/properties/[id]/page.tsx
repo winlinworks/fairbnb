@@ -1,4 +1,5 @@
 import PropertyRating from "@/components/card/PropertyRating";
+import Amenities from "@/components/Properties/Amenities";
 import BookingCalendar from "@/components/Properties/BookingCalendar";
 import BreadCrumbs from "@/components/Properties/BreadCrumbs";
 import Description from "@/components/Properties/Description";
@@ -41,6 +42,7 @@ async function PropertyDetailsPage({ params }: { params: { id: number } }) {
           <UserInfo profile={{ profileImage, firstName }} />
           <Separator className="mt-4" />
           <Description description={property.description} />
+          <Amenities amenities={property.amenities} />
         </div>
         <div className="lg:col-span-4 flex flex-col items-center">
           <BookingCalendar />

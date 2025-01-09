@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { profiles } from "./profiles";
 import { Property } from "../types/types";
+import { AmenityList } from "../util";
 
 type CategoryLabel =
   | "cabin"
@@ -42,7 +43,7 @@ for (let idx = 0; idx < faker.number.int({ min: 10, max: 20 }); idx++) {
     bedrooms: faker.number.int({ min: 1, max: 5 }),
     beds: faker.number.int({ min: 1, max: 5 }),
     baths: faker.number.int({ min: 1, max: 5 }),
-    amenities: faker.commerce.productAdjective(),
+    amenities: faker.helpers.arrayElements(AmenityList, { min: 1, max: 10 }),
     createdAt: faker.date.recent(),
     updatedAt: faker.date.recent(),
     profileId: randomProfile.id,
