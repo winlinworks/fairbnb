@@ -138,6 +138,7 @@ class TestListing:
         [
             pytest.param({}, 200, id="Valid listing"),
             pytest.param({"name": ""}, 422, id="Missing name"),
+            pytest.param({}, 404, id="Owner not found"),
         ],
     )
     def test_post_listing(
@@ -154,6 +155,10 @@ class TestListing:
         # Create a user
         user = UserCreate(**mock_user)
         user = create_user(test_db, user)
+
+        # If test case is for valid user record (not expecting 404 status code), set user ID to 0 (invalid)
+        if expected_status_code == 404:
+            user.id = 0
 
         # Create a listing
         listing_endpoint = f"/users/{user.id}/listings"

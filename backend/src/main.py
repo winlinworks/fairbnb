@@ -84,6 +84,10 @@ def remove_user(user_id: int, db: Session = Depends(get_db)):
 
 @app.post("/users/{user_id}/listings", response_model=ListingRead)
 def post_listing(user_id: int, listing: ListingCreate, db: Session = Depends(get_db)):
+    db_user = read_user(db, user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail=f"User ID {user_id} not found")
+
     return create_listing(db, listing, user_id)
 
 
