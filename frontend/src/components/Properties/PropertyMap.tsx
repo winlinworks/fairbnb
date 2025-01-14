@@ -9,14 +9,18 @@ import {
 import "leaflet/dist/leaflet.css";
 import { Icon } from "leaflet";
 
-const iconUrl = require("leaflet/dist/images/marker-icon.png");
-const makerIcon = new Icon({ iconUrl: iconUrl, iconSize: [20, 30] });
+const markerIconUrl = require("leaflet/dist/images/marker-icon.png");
+const markerShadowUrl = require("leaflet/dist/images/marker-shadow.png");
+
+const makerIcon = new Icon({
+  iconUrl: markerIconUrl,
+  shadowUrl: markerShadowUrl,
+  iconSize: [20, 30],
+});
 
 import { findCountryByName } from "@/utils/countries";
 import CountryFlagAndName from "../card/CountryFlagAndName";
 import Title from "./Title";
-
-import React from "react";
 
 function PropertyMap({ countryName }: { countryName: string }) {
   const defaultLocation = [51.505, -0.09] as [number, number];
@@ -27,10 +31,10 @@ function PropertyMap({ countryName }: { countryName: string }) {
     <div className="mt-4">
       <div className="mb-4">
         <Title text="Where you will be staying" />
-        <CountryFlagAndName countryCode={countryName} />
+        <CountryFlagAndName countryName={countryName} />
       </div>
       <MapContainer
-        scrollWheelZoom={false}
+        scrollWheelZoom={true}
         zoomControl={false}
         className="h-[50vh] w-full rounded-lg relative z-0"
         center={location || defaultLocation}
@@ -38,14 +42,13 @@ function PropertyMap({ countryName }: { countryName: string }) {
         style={{ height: "300px" }}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution="&copy; OpenStreetMap contributors"
         />
-        <ZoomControl position="bottomright" />
-        <Marker
-          position={location || defaultLocation}
-          icon={makerIcon}
-        ></Marker>
+
+        <Marker position={location || defaultLocation} icon={makerIcon}>
+          <Popup> {countryName || "Unknown Location"}</Popup>
+        </Marker>
       </MapContainer>
     </div>
   );

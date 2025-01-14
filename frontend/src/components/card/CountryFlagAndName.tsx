@@ -1,8 +1,8 @@
-import { findCountryByName } from "@/utils/countries";
+import { findCountryByName, formattedCountries } from "@/utils/countries";
 
 function CountryFlagAndName({ countryName }: { countryName: string }) {
-  const validCountry = findCountryByName(countryName)!;
-  console.log(validCountry);
+  const validCountry = findCountryByName(countryName);
+  if (!validCountry) return null;
 
   // const countryName =
   //   validCountry.name.length > 20
@@ -10,7 +10,7 @@ function CountryFlagAndName({ countryName }: { countryName: string }) {
   //     : validCountry.name;
   return (
     <span className="flex justify-between items-center gap-2 text-sm">
-      {/* {validCountry.flag} */}
+      {validCountry.flag}
       {countryName}
     </span>
   );
