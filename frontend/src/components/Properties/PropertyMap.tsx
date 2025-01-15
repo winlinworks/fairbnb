@@ -10,6 +10,10 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
+import { findCountryByName } from "@/utils/countries";
+import CountryFlagAndName from "../card/CountryFlagAndName";
+import Title from "./Title";
+
 const customIcon = L.icon({
   iconUrl: "/leaflet/marker-icon.png",
   shadowUrl: "/leaflet/marker-shadow.png",
@@ -18,10 +22,6 @@ const customIcon = L.icon({
   popupAnchor: [1, -34],
   shadowSize: [41, 41],
 });
-
-import { findCountryByName } from "@/utils/countries";
-import CountryFlagAndName from "../card/CountryFlagAndName";
-import Title from "./Title";
 
 function PropertyMap({ countryName }: { countryName: string }) {
   const defaultLocation = [51.505, -0.09] as [number, number];
