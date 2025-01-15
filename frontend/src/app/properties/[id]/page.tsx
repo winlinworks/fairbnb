@@ -53,12 +53,16 @@ async function PropertyDetailsPage({ params }: { params: { id: number } }) {
           <Separator className="mt-4" />
           <Description description={property.description} />
           <Amenities amenityList={property.amenities} />
-          <DynamicMap countryName={property.country} />
         </div>
+
         <div className="lg:col-span-4 flex flex-col items-center">
           <BookingCalendar />
         </div>
-        <div className="lg:col-span-8"></div>
+        <div className="lg:col-span-12">
+          {" "}
+          <Separator className="mt-4" />
+          <DynamicMap countryName={property.country} />
+        </div>
       </section>
     </section>
   );
