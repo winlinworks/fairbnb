@@ -22,7 +22,7 @@ export interface Property {
   bedrooms: number;
   beds: number;
   baths: number;
-  amenities: string;
+  amenities: string[];
   createdAt: Date;
   updatedAt: Date;
   profileId: string;
@@ -41,7 +41,7 @@ export interface PropertyDetail {
   bedrooms: number;
   beds: number;
   baths: number;
-  amenities: string;
+  amenities: string[];
 
   // profile info
   profileId: string;
