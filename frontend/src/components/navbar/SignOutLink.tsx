@@ -9,9 +9,11 @@ function SignOutLink() {
     toast({ description: "You have been signed out." });
   };
   return (
-    <button className="w-full text-left " onClick={handleLogout}>
-      Logout
-    </button>
+    <>
+      <button className="w-full text-left " onClick={handleLogout}>
+        Logout
+      </button>
+    </>
   );
 }
 
