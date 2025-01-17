@@ -17,13 +17,10 @@ export const fetchPropertyDetails = async (id: number) => {
   return post;
 };
 
-export const fetchUserInfo = async (id: number) => {
-  const data = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/propertyDetails/${id}`,
-    {
-      cache: "no-cache",
-    }
-  );
+export const fetchUserInfo = async (id: string) => {
+  const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/profile/${id}`, {
+    cache: "no-cache",
+  });
   const user = await data.json();
   return user;
 };
