@@ -18,9 +18,12 @@ export const fetchPropertyDetails = async (id: number) => {
 };
 
 export const fetchUserInfo = async (id: string) => {
-  const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/profile/${id}`, {
-    cache: "no-cache",
-  });
+  const data = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/profiles/${id}`,
+    {
+      cache: "no-cache",
+    }
+  );
   const user = await data.json();
   return user;
 };
