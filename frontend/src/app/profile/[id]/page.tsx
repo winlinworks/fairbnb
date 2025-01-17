@@ -6,8 +6,8 @@ import FormInput from "@/components/form/FormInput";
 import SubmitButton from "@/components/form/Buttons";
 import { updateProfileAction } from "@/lib/api/updateData";
 
-async function ProfilePage(id: string) {
-  const profile = await fetchUserInfo(id);
+async function ProfilePage({ params }: { params: { id: string } }) {
+  const profile = await fetchUserInfo(params.id);
 
   return (
     <section>
@@ -16,7 +16,7 @@ async function ProfilePage(id: string) {
         {/* image input container */}
 
         <FormContainer action={updateProfileAction}>
-          <div className="grid gap-4 md:grid-cols-2 mt-4 ">
+          <div className="grid gap-4 md:grid-cols-1 mt-4">
             <FormInput
               type="text"
               name="firstName"
@@ -34,6 +34,12 @@ async function ProfilePage(id: string) {
               name="username"
               label="Username"
               defaultValue={profile.username}
+            />
+            <FormInput
+              type="text"
+              name="email"
+              label="Email address"
+              defaultValue={profile.email}
             />
           </div>
           <SubmitButton text="Update Profile" className="mt-8" />
