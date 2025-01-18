@@ -1,6 +1,7 @@
 import { profiles } from "./profiles";
 import { properties } from "./properties";
 import { PropertyDetail, Profile } from "../types/types";
+
 const profileHash: Record<string, Profile> = profiles.reduce(
   (acc, profile) => {
     acc[profile.id] = profile;

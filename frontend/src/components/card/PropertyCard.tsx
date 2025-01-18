@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import PropertyLocation from "./PropertyLocation";
+import PropertyLocation from "./CountryFlagAndName";
 import PropertyRating from "./PropertyRating";
 import FavoriteToggleButton from "./FavoriteToggleButton";
 import { PropertyCardProps } from "@/utils/types";
