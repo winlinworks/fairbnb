@@ -23,6 +23,19 @@
             }
         },
         {
+            "name": "Python: Django",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/backend/src/manage.py",
+            "args": [
+                "runserver",
+                // "--noreload",
+                // "--nothreading"
+            ],
+            "console": "integratedTerminal",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
             "name": "Python: pytest",
             "type": "debugpy",
             "request": "launch",
