@@ -10,7 +10,6 @@ python = "^3.12"
 fastapi = {extras = ["standard"], version = "^0.112.2"}
 sqlmodel = "^0.0.21"
 psycopg2-binary = "^2.9.9"
-alembic = "^1.13.2"
 pytest-mock = "^3.14.0"
 python-dotenv = "^1.0.1"
 django = "^5.1.4"
