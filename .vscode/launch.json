@@ -33,7 +33,7 @@
                 // "--nothreading"
             ],
             "console": "integratedTerminal",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/backend/.env"
         },
         {
             "name": "Python: pytest",
@@ -44,9 +44,8 @@
                 "${workspaceFolder}/backend/tests"
             ],
             "console": "integratedTerminal",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}/backend"
-            }
+            "envFile": "${workspaceFolder}/backend/.env",
+            "justMyCode": false
         }
     ]
 }
