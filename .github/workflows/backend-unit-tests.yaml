@@ -45,5 +45,9 @@ jobs:
       - name: Install Application
         run: poetry install
 
+      - name: Set up Django environment
+        run: |
+          export DJANGO_SETTINGS_MODULE=src.fairbnb.settings
+
       - name: Run Tests
         run: pytest -vv
