@@ -28,13 +28,16 @@ app = FastAPI(lifespan=lifespan)
 
 
 @app.post("/users", response_model=UserRead)
-def post_user(user: UserCreate):
-    # db_user = read_user_by_email(db, user.email)
-
-    # If user already exists, raise an error
+def create_user(user: UserCreate):
+    # If user with email already exists, raise an error
     db_user = User.objects.filter(email=user.email).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
+
+    # If user with username already exists, raise an error
+    db_user = User.objects.filter(username=user.username).first()
+    if db_user:
+        raise HTTPException(status_code=400, detail="Username already registered")
 
     # Else, create the user
     return User.objects.create_user(
@@ -56,12 +59,10 @@ def get_user(user_id: int):
     return db_user
 
 
-# TODO(winlinworks): Update to use Django ORM
 @app.put("/users/{user_id}", response_model=UserRead)
-def put_user(user_id: int, user: UserCreate):
+def update_user(user_id: int, user: UserCreate):
     # Get user based on user_id
     db_user = User.objects.filter(id=user_id).first()
-
     if db_user is None:
         raise HTTPException(status_code=404, detail=f"User ID {user_id} not found")
 
@@ -74,9 +75,8 @@ def put_user(user_id: int, user: UserCreate):
     return db_user
 
 
-# TODO(winlinworks): Update to use Django ORM
 @app.delete("/users/{user_id}")
-def remove_user(user_id: int):
+def delete_user(user_id: int):
     # Get user based on user_id
     db_user = User.objects.filter(id=user_id).first()
 
