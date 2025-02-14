@@ -16,7 +16,7 @@ client = TestClient(app)
 
 
 @pytest.fixture(scope="function")
-def test_user():
+def user_dict():
     return {
         "username": "john_doe",
         "email": "john@example.com",
@@ -24,7 +24,6 @@ def test_user():
     }
 
 
-@pytest.mark.django_db()
 class TestUser:
     """
     Tests are coupled (e.g., test_post_user and test_get_user depend on the same data). I tried fixing this by moving django_db mark above each test, but couldn't get it working. Need to figure out how to decouple tests.
@@ -38,9 +37,9 @@ class TestUser:
             pytest.param({"email": ""}, 422, id="Missing email"),
         ],
     )
-    def test_post_user(self, test_user, user_changes, expected_status_code):
+    def test_post_user(self, db, user_dict, user_changes, expected_status_code):  # noqa: ARG002
         # Update dict for creating user
-        user = test_user.copy()
+        user = user_dict.copy()
         user.update(user_changes)
 
         # Create user w/ endpoint
@@ -56,24 +55,12 @@ class TestUser:
             pytest.param(0, 404, id="Invalid user ID"),
         ],
     )
-    def test_get_user(self, user_id, expected_status_code):
+    def test_get_user(self, db, user_id, expected_status_code):  # noqa: ARG002
         # Get user w/ endpoint
         endpoint = f"/users/{user_id}"
         response = client.get(endpoint)
 
         assert response.status_code == expected_status_code  # noqa: S101
-
-    # @pytest.fixture
-    # def mock_update_user(self, mock_user):
-    #     # Update mock user for test case
-    #     mock_update_user = mock_user.copy()
-    #     mock_update_user.update(
-    #         {
-    #             "is_active": True,
-    #             "listings": [],
-    #         }
-    #     )
-    #     return mock_update_user
 
     @pytest.mark.parametrize(
         "user_id,user_changes,expected_status_code",
@@ -93,9 +80,9 @@ class TestUser:
             ),
         ],
     )
-    def test_put_user(self, test_user, user_id, user_changes, expected_status_code):
+    def test_put_user(self, db, user_dict, user_id, user_changes, expected_status_code):  # noqa: ARG002
         # Update dict for updating user
-        updated_user = test_user.copy()
+        updated_user = user_dict.copy()
         updated_user.update(user_changes)
 
         # Add user ID
@@ -120,7 +107,7 @@ class TestUser:
             pytest.param(0, 404, id="Delete invalid ID"),
         ],
     )
-    def test_delete_user(self, user_id, expected_status_code):
+    def test_delete_user(self, db, user_id, expected_status_code):  # noqa: ARG002
         # Delete the user
         endpoint = f"/users/{user_id}"
         response = client.delete(endpoint)
