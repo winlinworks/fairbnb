@@ -1,91 +1,86 @@
-from sqlalchemy.orm import Session
+from src.fairbnb.models import User
 
-from src.models import Listing, User
-from src.schemas import ListingCreate, ListingRead, UserCreate, UserRead
-from src.utils import update_record
+# TODO(winlinworks): Create a Django client class to handle database operations
 
 # User CRUD ops
 
 
-def create_user(db: Session, user: UserCreate) -> User:
-    fake_hashed_password = user.password + "notreallyhashed"
-    db_user = User(
-        email=user.email, username=user.username, hashed_password=fake_hashed_password
-    )
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
+class DBClient:
+    """
+    Generic database client class to handle CRUD operations. Extend this class to create model specific database clients (e.g., User, Property, etc.).
+    """
+
+    def __init__(self, model):
+        self.model = model
+
+    def create(self, **kwargs):
+        obj = self.model.objects.create(**kwargs)
+        return obj.id
+
+    def read(self, **kwargs):
+        return self.model.objects.filter(**kwargs).first()
+
+    def update(self, id: int, **kwargs):
+        obj = self.read(id=id)
+        for key, value in kwargs.items():
+            setattr(obj, key, value)
+        obj.save()
+        return obj
+
+    def delete(self, id: int):
+        obj = self.read(id=id)
+        obj.delete()
+
+    def check_record_exists(self, field: str, value: str) -> bool:
+        return self.read(**{field: value}) is not None
 
 
-def read_user(db: Session, user_id: int) -> User:
-    return db.query(User).filter(User.id == user_id).first()
+# User DB client
+class UserDBClient(DBClient):
+    """
+    User database client to handle CRUD operations.
+    """
+
+    def __init__(self):
+        super().__init__(User)
 
 
-def read_user_by_email(db: Session, email: str) -> User:
-    return db.query(User).filter(User.email == email).first()
+# # Property CRUD ops
 
 
-def read_users(db: Session, skip: int = 0, limit: int = 100) -> list[User]:
-    return db.query(User).offset(skip).limit(limit).all()
+# def create_listing(listing: PropertyCreate, user_id: int) -> Property:
+#     db_listing = Property(**listing.model_dump(), owner_id=user_id)
+#     db.add(db_listing)
+#     db.commit()
+#     db.refresh(db_listing)
+#     return db_listing
 
 
-def update_user(db: Session, user_id: int, new_user_data: UserRead) -> User:
-    db_user = read_user(db, user_id)
-
-    # Update user fields
-    update_record(db_user, new_user_data)
-
-    # Save changes
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
+# def read_listing(listing_id: int) -> Property:
+#     return db.query(Property).filter(Property.id == listing_id).first()
 
 
-def delete_user(db: Session, user_id: int):
-    db_user = read_user(db, user_id)
-    db.delete(db_user)
-    db.commit()
-    return {"message": "User deleted", "user_id": user_id}
+# def read_listings(skip: int = 0, limit: int = 100) -> list[Property]:
+#     return db.query(Property).offset(skip).limit(limit).all()
 
 
-# Listing CRUD ops
+# def update_listing(
+#     listing_id: int, new_listing_data: PropertyRead
+# ) -> Property:
+#     db_listing = read_listing(db, listing_id)
+
+#     # Update listing fields
+#     update_record(db_listing, new_listing_data)
+
+#     # Save changes
+#     db.add(db_listing)
+#     db.commit()
+#     db.refresh(db_listing)
+#     return db_listing
 
 
-def create_listing(db: Session, listing: ListingCreate, user_id: int) -> Listing:
-    db_listing = Listing(**listing.model_dump(), owner_id=user_id)
-    db.add(db_listing)
-    db.commit()
-    db.refresh(db_listing)
-    return db_listing
-
-
-def read_listing(db: Session, listing_id: int) -> Listing:
-    return db.query(Listing).filter(Listing.id == listing_id).first()
-
-
-def read_listings(db: Session, skip: int = 0, limit: int = 100) -> list[Listing]:
-    return db.query(Listing).offset(skip).limit(limit).all()
-
-
-def update_listing(
-    db: Session, listing_id: int, new_listing_data: ListingRead
-) -> Listing:
-    db_listing = read_listing(db, listing_id)
-
-    # Update listing fields
-    update_record(db_listing, new_listing_data)
-
-    # Save changes
-    db.add(db_listing)
-    db.commit()
-    db.refresh(db_listing)
-    return db_listing
-
-
-def delete_listing(db: Session, listing_id: int):
-    db_listing = read_listing(db, listing_id)
-    db.delete(db_listing)
-    db.commit()
-    return {"message": "Listing deleted", "listing_id": listing_id}
+# def delete_listing(listing_id: int):
+#     db_listing = read_listing(db, listing_id)
+#     db.delete(db_listing)
+#     db.commit()
+#     return {"message": "Property deleted", "listing_id": listing_id}

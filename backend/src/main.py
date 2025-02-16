@@ -2,11 +2,9 @@ import logging
 import sys
 from contextlib import asynccontextmanager
 
-# from sqlalchemy.orm import Session
-# import models
-from django.contrib.auth.models import User
 from fastapi import FastAPI, HTTPException
 
+from src.crud import UserDBClient
 from src.schemas import UserCreate, UserRead
 
 logger = logging.getLogger(__name__)
@@ -26,74 +24,74 @@ async def lifespan(app: FastAPI):  # noqa: ARG001
 
 app = FastAPI(lifespan=lifespan)
 
+# Create a user DB client
+user_db = UserDBClient()
+
 
 @app.post("/users", response_model=UserRead)
-def create_user(user: UserCreate):
+def add_user(user: UserCreate):
     # If user with email already exists, raise an error
-    db_user = User.objects.filter(email=user.email).first()
-    if db_user:
+    if user_db.check_record_exists("email", user.email):
         raise HTTPException(status_code=400, detail="Email already registered")
 
     # If user with username already exists, raise an error
-    db_user = User.objects.filter(username=user.username).first()
-    if db_user:
+    if user_db.check_record_exists("username", user.username):
         raise HTTPException(status_code=400, detail="Username already registered")
 
-    # Else, create the user
-    return User.objects.create_user(
-        username=user.username, email=user.email, password=user.password
-    )
-
-
-# TODO(winlinworks): Update to use Django ORM
-# @app.get("/users", response_model=list[UserRead])
-# def get_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-#     return read_users(db, skip, limit)
+    # Else, create the user and return response with user id and status code
+    user_id = user_db.create(**user.model_dump())
+    logger.info("User created with ID: %s", user_id)
+    return user_db.read(id=user_id)
 
 
 @app.get("/users/{user_id}", response_model=UserRead)
 def get_user(user_id: int):
-    db_user = User.objects.filter(id=user_id).first()
+    # Get user for user_id
+    db_user = user_db.read(id=user_id)
+
+    # If user does not exist, raise an error
     if db_user is None:
         raise HTTPException(status_code=404, detail=f"User ID {user_id} not found")
+
     return db_user
 
 
 @app.put("/users/{user_id}", response_model=UserRead)
 def update_user(user_id: int, user: UserCreate):
-    # Get user based on user_id
-    db_user = User.objects.filter(id=user_id).first()
+    # Get user for user_id
+    db_user = user_db.read(id=user_id)
+
+    # If user does not exist, raise an error
     if db_user is None:
         raise HTTPException(status_code=404, detail=f"User ID {user_id} not found")
 
-    # Update user fields and save user
-    db_user.username = user.username
-    db_user.email = user.email
-    db_user.password = user.password
-    db_user.save()
+    # Update user fields
+    user_db.update(id=user_id, **user.model_dump())
 
-    return db_user
+    # Return updated user
+    return user_db.read(id=user_id)
 
 
 @app.delete("/users/{user_id}")
 def delete_user(user_id: int):
     # Get user based on user_id
-    db_user = User.objects.filter(id=user_id).first()
+    db_user = user_db.read(id=user_id)
 
     if db_user is None:
         raise HTTPException(status_code=404, detail=f"User ID {user_id} not found")
 
-    db_user.delete()
+    user_db.delete(id=user_id)
 
 
-# TODO(winlinworks): Update to use Django ORM
-# @app.post("/users/{user_id}/listings", response_model=ListingRead)
-# def post_listing(user_id: int, listing: ListingCreate, db: Session = Depends(get_db)):
-#     db_user = read_user(db, user_id)
+# @app.post("/users/{user_id}/properties", response_model=PropertyRead)
+# def post_listing(user_id: int, property: PropertyCreate):
+#     # Get user based on user_id
+#     db_user = User.objects.filter(id=user_id).first()
+
 #     if db_user is None:
 #         raise HTTPException(status_code=404, detail=f"User ID {user_id} not found")
 
-#     return create_listing(db, listing, user_id)
+#     return Property.objects.create(property, owner=db_user)
 
 # TODO(winlinworks): Update to use Django ORM
 # @app.get("/listings", response_model=list[ListingRead])
