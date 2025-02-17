@@ -61,14 +61,11 @@ def get_user(user_id: int):
 
 @app.put("/users/{user_id}", response_model=UserRead)
 def update_user(user_id: int, user: UserCreate):
-    # Get user for user_id
-    db_user = user_db.read(id=user_id)
-
     # If user does not exist, raise an error
-    if db_user is None:
+    if not user_db.check_record_exists(id=user_id):
         raise HTTPException(status_code=404, detail=f"User ID {user_id} not found")
 
-    # Update user fields
+    # Update user
     user_db.update(id=user_id, **user.model_dump())
 
     # Return updated user
