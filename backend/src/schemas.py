@@ -2,28 +2,36 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 
 # Pydantic model for listings
-class ListingBase(BaseModel):
-    name: str = Field(..., description="Name of listing")
-    tagline: str = Field(..., description="Tagline of listing")
-    location: str = Field(..., description="City and state of listing")
-    image: str = Field(..., description="URL of listing image")
-    price: float = Field(..., description="Nightly price of listing")
+class PropertyBase(BaseModel):
+    name: str = Field(..., description="Name of property")
+    tagline: str = Field(..., description="Tagline of property")
+    category: str = Field(..., description="Category of property")
+    image: str = Field(..., description="URL of property image")
+    location: str = Field(..., description="Address of property")
+    description: str = Field(..., description="Description of property")
+    guests: int = Field(..., description="Number of guests property can accommodate")
+    bedrooms: int = Field(..., description="Number of bedrooms in property")
+    beds: int = Field(..., description="Number of beds in property")
+    baths: int = Field(..., description="Number of bathrooms in property")
+    amenities: list[str] = Field(..., description="List of amenities in property")
+    price: float = Field(..., description="Nightly price of property")
+    owner_id: int = Field(..., description="ID of property owner")
 
     @field_validator("name")
     @classmethod
     def name_must_not_be_empty(cls, v):
         if v.strip() == "":
-            msg = "Listing name must not be an empty string"
+            msg = "Property name must not be an empty string"
             raise ValueError(msg)
         return v
 
 
-class ListingCreate(ListingBase):
+class PropertyCreate(PropertyBase):
     pass
 
 
-class ListingRead(ListingBase):
-    id: int = Field(..., description="The ID of the listing")
+class PropertyRead(PropertyBase):
+    id: int = Field(..., description="The ID of the property")
     owner_id: int = Field(..., description="The ID of the owner")
 
     model_config = ConfigDict(from_attributes=True)
@@ -50,6 +58,6 @@ class UserCreate(UserBase):
 class UserRead(UserBase):
     id: int | None = Field(..., description="The ID of the user")
     is_active: bool = Field(..., description="The active status of the user")
-    listings: list[ListingRead] = []
+    properties: list[PropertyRead] = []
 
     model_config = ConfigDict(from_attributes=True)

@@ -4,8 +4,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
 
-from src.crud import UserDBClient
-from src.schemas import UserCreate, UserRead
+from src.crud import PropertyDBClient, UserDBClient
+from src.schemas import PropertyCreate, PropertyRead, UserCreate, UserRead
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -27,15 +27,18 @@ app = FastAPI(lifespan=lifespan)
 # Create a user DB client
 user_db = UserDBClient()
 
+# Create a property DB client
+property_db = PropertyDBClient()
+
 
 @app.post("/users", response_model=UserRead)
 def add_user(user: UserCreate):
     # If user with email already exists, raise an error
-    if user_db.check_record_exists("email", user.email):
+    if user_db.check_record_exists(email=user.email):
         raise HTTPException(status_code=400, detail="Email already registered")
 
     # If user with username already exists, raise an error
-    if user_db.check_record_exists("username", user.username):
+    if user_db.check_record_exists(username=user.username):
         raise HTTPException(status_code=400, detail="Username already registered")
 
     # Else, create the user and return response with user id and status code
@@ -74,66 +77,72 @@ def update_user(user_id: int, user: UserCreate):
 
 @app.delete("/users/{user_id}")
 def delete_user(user_id: int):
-    # Get user based on user_id
-    db_user = user_db.read(id=user_id)
-
-    if db_user is None:
+    # If user does not exist, raise an error
+    if not user_db.check_record_exists(id=user_id):
         raise HTTPException(status_code=404, detail=f"User ID {user_id} not found")
 
+    # Delete user
     user_db.delete(id=user_id)
+    logger.info("User deleted with ID: %s", user_id)
+    return {"detail": f"User ID {user_id} deleted successfully"}
 
 
-# @app.post("/users/{user_id}/properties", response_model=PropertyRead)
-# def post_listing(user_id: int, property: PropertyCreate):
-#     # Get user based on user_id
-#     db_user = User.objects.filter(id=user_id).first()
+@app.post("/users/{user_id}/properties", response_model=PropertyRead)
+def add_property(user_id: int, property: PropertyCreate):
+    # Get user based on user_id
+    if not user_db.check_record_exists(id=user_id):
+        raise HTTPException(status_code=400, detail=f"User ID {user_id} not found")
 
-#     if db_user is None:
-#         raise HTTPException(status_code=404, detail=f"User ID {user_id} not found")
+    # Create property and return response with property id and status code
+    property_id = property_db.create(**property.model_dump())
+    logger.info("Property created with ID: %s", property_id)
 
-#     return Property.objects.create(property, owner=db_user)
+    return property_db.read(id=property_id)
 
-# TODO(winlinworks): Update to use Django ORM
-# @app.get("/listings", response_model=list[ListingRead])
-# def get_listings(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-#     return read_listings(db, skip, limit)
 
-# TODO(winlinworks): Update to use Django ORM
-# @app.get("/listings/{listing_id}", response_model=ListingRead)
-# def get_listing(listing_id: int, db: Session = Depends(get_db)):
-#     db_listing = read_listing(db, listing_id)
-#     if db_listing is None:
-#         raise HTTPException(
-#             status_code=404, detail=f"Listing ID {listing_id} not found"
-#         )
-#     return db_listing
+@app.get("/properties/{property_id}", response_model=PropertyRead)
+def get_property(property_id: int):
+    # Get roperty for listing_id
+    db_property = property_db.read(id=property_id)
 
-# TODO(winlinworks): Update to use Django ORM
-# @app.put("/listings/{listing_id}", response_model=ListingRead)
-# def put_listing(listing_id: int, listing: ListingRead, db: Session = Depends(get_db)):
-#     # Verify if user exists
-#     db_user = read_user(db, listing.owner_id)
-#     if db_user is None:
-#         raise HTTPException(
-#             status_code=404, detail=f"User ID {listing.owner_id} not found"
-#         )
+    # If property does not exist, raise an error
+    if db_property is None:
+        raise HTTPException(
+            status_code=404, detail=f"Property ID {property_id} not found"
+        )
 
-#     # Verify if listing exists
-#     db_listing = read_listing(db, listing_id)
-#     if db_listing is None:
-#         raise HTTPException(
-#             status_code=404, detail=f"Listing ID {listing_id} not found"
-#         )
+    return db_property
 
-#     return update_listing(db, listing_id, listing)
 
-# TODO(winlinworks): Update to use Django ORM
-# @app.delete("/listings/{listing_id}")
-# def remove_listing(listing_id: int, db: Session = Depends(get_db)):
-#     db_listing = read_listing(db, listing_id)
-#     if db_listing is None:
-#         raise HTTPException(
-#             status_code=404, detail=f"Listing ID {listing_id} not found"
-#         )
+@app.put("/properties/{property_id}", response_model=PropertyRead)
+def update_property(property_id: int, property: PropertyCreate):
+    # If property does not exist, raise an error
+    if not property_db.check_record_exists(id=property_id):
+        raise HTTPException(
+            status_code=404, detail=f"Listing ID {property_id} not found"
+        )
 
-#     return delete_listing(db, listing_id)
+    # If owner does not exist, raise an error
+    if not user_db.check_record_exists(id=property.owner_id):
+        raise HTTPException(
+            status_code=422, detail=f"Owner ID {property.owner_id} not found"
+        )
+
+    # Update property fields
+    property_db.update(id=property_id, **property.model_dump())
+
+    return property_db.read(id=property_id)
+
+
+@app.delete("/properties/{property_id}")
+def delete_property(property_id: int):
+    # If property does not exist, raise an error
+    if not property_db.check_record_exists(id=property_id):
+        raise HTTPException(
+            status_code=404, detail=f"Listing ID {property_id} not found"
+        )
+
+    # Delete property
+    property_db.delete(id=property_id)
+    logger.info("Property deleted with ID: %s", property_id)
+    return {"detail": f"Property ID {property_id} deleted successfully"}

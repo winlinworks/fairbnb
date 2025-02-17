@@ -20,13 +20,13 @@ class Property(models.Model):
     tagline = models.CharField(max_length=100)
     category = models.CharField(max_length=100)  # may want an enum type
     image = models.URLField()
-    location = models.CharField(max_length=100)
+    location = models.CharField(max_length=100)  # may want to address object
     description = models.TextField()
     guests = models.IntegerField()
     bedrooms = models.IntegerField()
     beds = models.IntegerField()
     baths = models.IntegerField()
-    amenities = models.JSONField(default=list)
+    amenities = models.JSONField(default=list)  # may want enum type
     price = models.FloatField()
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
 
