@@ -34,6 +34,18 @@ class DBClient:
         """
         return self.model.objects.filter(**filters).first()
 
+    def read_all(self, **filters):
+        """
+        Read all objects from the database that match the given filters.
+
+        Args:
+            **filters: The fields to filter by.
+
+        Returns:
+            A list of objects matching the filters.
+        """
+        return self.model.objects.filter(**filters)
+
     def update(self, id: int, **fields):
         """
         Update an object in the database.

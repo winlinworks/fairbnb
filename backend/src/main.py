@@ -1,11 +1,21 @@
 import logging
+import os
 import sys
 from contextlib import asynccontextmanager
 
+import django
+from asgiref.sync import sync_to_async
+from django.core.wsgi import get_wsgi_application
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.wsgi import WSGIMiddleware
 
-from src.crud import PropertyDBClient, UserDBClient
-from src.schemas import PropertyCreate, PropertyRead, UserCreate, UserRead
+# Initialize Django app before importing models
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "src.fairbnb.settings")
+django.setup()
+
+from src.crud import PropertyDBClient, UserDBClient  # noqa: E402
+from src.schemas import PropertyCreate, PropertyRead, UserCreate, UserRead  # noqa: E402
+from src.seed import seed_database  # noqa: E402
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -18,11 +28,18 @@ logger.addHandler(stream_handler)
 @asynccontextmanager
 async def lifespan(app: FastAPI):  # noqa: ARG001
     logger.info("startup: triggered")
+    await sync_to_async(
+        seed_database
+    )()  # for dev only, remove this line to disable seeding when deploying
     yield
     logger.info("shutdown: triggered")
 
 
 app = FastAPI(lifespan=lifespan)
+
+# Mount the Django WSGI application
+django_app = get_wsgi_application()
+app.mount("/django", WSGIMiddleware(django_app))
 
 # Create a user DB client
 user_db = UserDBClient()
@@ -57,6 +74,18 @@ def get_user(user_id: int):
         raise HTTPException(status_code=404, detail=f"User ID {user_id} not found")
 
     return db_user
+
+
+@app.get("/users", response_model=list[UserRead])
+def get_users():
+    # Get all users
+    db_users = user_db.read_all()
+
+    # If no users exist, raise an error
+    if not db_users:
+        raise HTTPException(status_code=404, detail="No users found")
+
+    return db_users
 
 
 @app.put("/users/{user_id}", response_model=UserRead)
@@ -95,6 +124,18 @@ def add_property(user_id: int, property: PropertyCreate):
     logger.info("Property created with ID: %s", property_id)
 
     return property_db.read(id=property_id)
+
+
+@app.get("/properties", response_model=list[PropertyRead])
+def get_properties():
+    # Get all properties
+    db_properties = property_db.read_all()
+
+    # If no properties exist, raise an error
+    if not db_properties:
+        raise HTTPException(status_code=404, detail="No properties found")
+
+    return db_properties
 
 
 @app.get("/properties/{property_id}", response_model=PropertyRead)

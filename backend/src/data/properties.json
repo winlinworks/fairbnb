@@ -1,0 +1,47 @@
+[
+    {
+        "name": "Property 1",
+        "tagline": "Tagline 1",
+        "category": "Category 1",
+        "image": "https://a0.muscache.com/im/pictures/d1db0b4a-9830-42e2-875d-0d41820ca4e3.jpg?im_w=960",
+        "location": "Location 1",
+        "description": "Description 1",
+        "guests": 4,
+        "bedrooms": 2,
+        "beds": 2,
+        "baths": 1,
+        "amenities": ["WiFi", "Kitchen"],
+        "price": 100.00,
+        "owner_username": "testuser"
+    },
+    {
+        "name": "Property 2",
+        "tagline": "Tagline 2",
+        "category": "Category 2",
+        "image": "https://a0.muscache.com/im/pictures/d1db0b4a-9830-42e2-875d-0d41820ca4e3.jpg?im_w=960",
+        "location": "Location 2",
+        "description": "Description 2",
+        "guests": 6,
+        "bedrooms": 3,
+        "beds": 3,
+        "baths": 2,
+        "amenities": ["WiFi", "Pool"],
+        "price": 200.00,
+        "owner_username": "testuser"
+    },
+    {
+        "name": "Property 3",
+        "tagline": "Tagline 3",
+        "category": "Category 3",
+        "image": "https://a0.muscache.com/im/pictures/d1db0b4a-9830-42e2-875d-0d41820ca4e3.jpg?im_w=960",
+        "location": "Location 3",
+        "description": "Description 3",
+        "guests": 8,
+        "bedrooms": 4,
+        "beds": 4,
+        "baths": 3,
+        "amenities": ["WiFi", "Parking"],
+        "price": 300.00,
+        "owner_username": "testuser"
+    }
+]
