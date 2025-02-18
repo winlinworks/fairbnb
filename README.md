@@ -1,11 +1,11 @@
 # Fairbnb
 Welcome to Fairbnb, a clone of Airbnb. This doc aims to quickly onboard devs to the product, including local dev setup, tools, patterns, and ways of working. To suggest edits, open an issue in this repo.
 
-## Set up local dev environment
-To load virtual environment in your shell, run `poetry shell`. Dependencies for the app are included in the `poetry.lock` and `pyproject.toml` files. You can also load the virtual environment separately for each command by running `poetry run {your command}`.
+## Set up local back-end dev environment
+To load virtual environment in your shell, go to the `backend` folder and run `poetry shell`. Dependencies for the app are included in the `poetry.lock` and `pyproject.toml` files. You can also load the virtual environment separately for each command by running `poetry run {your command}`.
 
 ## Run app locally
-To run the application for development, run `docker compose up --build --watch -d`. You can also use Podman, a more secure and container/pod manager, by running `podman compose --file docker-compose.yml up --detach`. View the website by visiting `http://127.0.0.1:3000` in a browser.
+To run the application for development, go to the project root folder and run `docker compose up --build -d`. You can also use Podman, a more secure and container/pod manager, by running `podman compose up --build -d`. View the website by visiting `http://127.0.0.1:3000` in a browser.
 
 After running the app locally, you can view the API docs by visiting `http://127.0.0.1:8000/docs` in a browser.
 
