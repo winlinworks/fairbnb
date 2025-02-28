@@ -28,7 +28,9 @@ print("Loading settings...")
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+
+# If pytest is imported, set DEBUG to True, else set it to False
+DEBUG = bool(find_spec("pytest"))
 
 ALLOWED_HOSTS = []
 
@@ -82,7 +84,8 @@ WSGI_APPLICATION = "fairbnb.wsgi.application"
 # Load environment variables from .env file
 load_dotenv()
 
-if find_spec("pytest"):
+# If DEBUG is True, use an in-memory SQLite database, else use a PostgreSQL database
+if DEBUG:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
