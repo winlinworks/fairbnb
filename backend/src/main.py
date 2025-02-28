@@ -20,7 +20,12 @@ from src.schemas import PropertyCreate, PropertyRead, UserCreate, UserRead  # no
 from src.seed import seed_database  # noqa: E402
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+
+if DEBUG:
+    logger.setLevel(logging.DEBUG)
+else:
+    logger.setLevel(logging.INFO)
+
 stream_handler = logging.StreamHandler(sys.stdout)
 log_formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 stream_handler.setFormatter(log_formatter)
@@ -118,7 +123,7 @@ def delete_user(user_id: int):
 def add_property(user_id: int, property: PropertyCreate):
     # Get user based on user_id
     if not User.objects.filter(id=user_id).first():
-        raise HTTPException(status_code=400, detail=f"User ID {user_id} not found")
+        raise HTTPException(status_code=404, detail=f"User ID {user_id} not found")
 
     # Create property
     property = Property.objects.create(**property.model_dump())
