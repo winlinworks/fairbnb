@@ -1,5 +1,5 @@
 # Local files
-test_db.sqlite
+db/data
 .DS_Store
 
 # Byte-compiled / optimized / DLL files
