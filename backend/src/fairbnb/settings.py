@@ -101,6 +101,7 @@ else:
             "PASSWORD": os.getenv("POSTGRES_PASS"),
             "HOST": os.getenv("POSTGRES_HOST"),
             "PORT": os.getenv("POSTGRES_PORT"),
+            "OPTIONS": {"pool": {"min_size": 2, "max_size": 4, "timeout": 10}},
         }
     }
 

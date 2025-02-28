@@ -24,8 +24,8 @@ FROM base AS build
 ARG APP_DIR
 
 # Install curl so we can get poetry
-# install build-base and libffi-dev so we can install poetry and dependencies (compiles some code)
-RUN apk --no-cache add curl build-base libffi-dev
+# install build-base, libffi-dev, and libpq-dev so we can install poetry and dependencies (compiles some code)
+RUN apk --no-cache add curl build-base libffi-dev libpq-dev
 
 # install poetry and add to path
 ENV POETRY_VERSION=1.8.3

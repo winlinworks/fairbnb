@@ -8,9 +8,9 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 fastapi = {extras = ["standard"], version = "^0.115.8"}
-psycopg2-binary = "^2.9.10"
 python-dotenv = "^1.0.1"
 django = "^5.1.4"
+psycopg = {extras = ["pool", "c"], version = "^3.2.5"}
 
 
 [tool.poetry.group.dev.dependencies]
