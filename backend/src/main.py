@@ -15,6 +15,7 @@ django.setup()
 
 # from src.crud import PropertyDBClient, UserDBClient  # noqa: E402
 from src.fairbnb.models import Property, User  # noqa: E402
+from src.fairbnb.settings import DEBUG  # noqa: E402
 from src.schemas import PropertyCreate, PropertyRead, UserCreate, UserRead  # noqa: E402
 from src.seed import seed_database  # noqa: E402
 
@@ -29,9 +30,11 @@ logger.addHandler(stream_handler)
 @asynccontextmanager
 async def lifespan(app: FastAPI):  # noqa: ARG001
     logger.info("startup: triggered")
-    await sync_to_async(
-        seed_database
-    )()  # for dev only, remove this line to disable seeding when deploying
+
+    # Seed database if in DEBUG mode
+    if DEBUG:
+        await sync_to_async(seed_database)()
+        logger.info("Database seeded")
     yield
     logger.info("shutdown: triggered")
 
