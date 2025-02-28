@@ -39,7 +39,6 @@ class PropertyRead(PropertyBase):
 
 # Pydantic model for users
 class UserBase(BaseModel):
-    username: str = Field(..., description="The username of the user")
     email: EmailStr = Field(..., description="The email of the user")
 
     @field_validator("email")

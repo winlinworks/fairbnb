@@ -37,5 +37,5 @@ addopts = [
     "-ra",
     "-s"
 ]
-DJANGO_SETTINGS_MODULE = "src.fairbnb.settings"
+DJANGO_SETTINGS_MODULE = "src.db.settings"
 python_files = "tests.py test_*.py *_tests.py"

@@ -10,10 +10,11 @@ The tests are written using pytest and the FastAPI TestClient.
 from typing import Optional
 
 import pytest
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import Group
 from fastapi.testclient import TestClient
 
-from src.fairbnb.models import Property
+from src.db.properties.models import Property
+from src.db.users.models import User
 from src.main import app
 
 client = TestClient(app)
@@ -22,7 +23,6 @@ client = TestClient(app)
 @pytest.fixture(scope="function")
 def user1_dict():
     return {
-        "username": "john_doe",
         "email": "john@test.com",
         "password": "hashed_password_1",
     }
@@ -31,14 +31,12 @@ def user1_dict():
 @pytest.fixture(scope="function")
 def user2_dict():
     return {
-        "username": "jane_doe",
         "email": "jane@test.com",
         "password": "hashed_password_2",
     }
 
 
 def create_user(
-    username: str,
     password: Optional[str] = None,
     first_name: Optional[str] = "first name",
     last_name: Optional[str] = "last name",
@@ -49,7 +47,6 @@ def create_user(
     groups: list[Group] = [],
 ) -> User:
     user = User.objects.create_user(
-        username=username,
         password=password,
         first_name=first_name,
         last_name=last_name,
@@ -70,11 +67,8 @@ class TestUser:
     @pytest.mark.parametrize(
         "user_changes,expected_status_code",
         [
-            pytest.param(
-                {"username": "jane_doe", "email": "jane@test.com"}, 200, id="Valid user"
-            ),
-            pytest.param({"email": "jane@test.com"}, 400, id="Duplicate username"),
-            pytest.param({"username": "jane_doe"}, 400, id="Duplicate email"),
+            pytest.param({"email": "jane@test.com"}, 200, id="Valid user"),
+            pytest.param({}, 400, id="Duplicate email"),
             pytest.param({"email": ""}, 422, id="Missing email"),
         ],
     )
@@ -130,15 +124,15 @@ class TestUser:
             pytest.param(None, {}, 200, id="No updates"),
             pytest.param(
                 None,
-                {"username": "john_doe_update", "email": "john@update.com"},
+                {"email": "john@update.com"},
                 200,
-                id="Update username and email",
+                id="Update email",
             ),
             pytest.param(
                 None,
-                {"username": "", "email": ""},
+                {"email": ""},
                 422,
-                id="Update username and email: empty string",
+                id="Update email: empty string",
             ),
         ],
     )
@@ -169,7 +163,6 @@ class TestUser:
 
         # If expected status of update is success (200), check value of updated field
         if expected_status_code == 200:
-            assert response.json()["username"] == updated_user1["username"]  # noqa: S101
             assert response.json()["email"] == updated_user1["email"]  # noqa: S101
 
     @pytest.mark.parametrize(
@@ -257,7 +250,7 @@ class TestProperty:
         [
             pytest.param({}, 200, id="Valid property"),
             pytest.param({"name": ""}, 422, id="Missing property name"),
-            pytest.param({}, 400, id="Owner not found"),
+            pytest.param({}, 404, id="Owner not found"),
         ],
     )
     def test_post_property(
@@ -269,7 +262,7 @@ class TestProperty:
         expected_status_code,
     ):
         # If test case is for valid user (not expecting 400 status code)
-        if expected_status_code != 400:
+        if expected_status_code != 404:
             # Create use and set user ID to created user ID
             user = create_user(**user1_dict)
             user_id = user.id

@@ -2,7 +2,8 @@
 import json
 from pathlib import Path
 
-from src.fairbnb.models import Property, User
+from src.db.properties.models import Property
+from src.db.users.models import User
 from src.schemas import PropertyCreate, UserCreate
 
 

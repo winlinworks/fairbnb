@@ -1,16 +1,6 @@
-# Django models for Profiles and Properties
-
-from django.contrib.auth.models import User
 from django.db import models
 
-
-# Profile model
-class Profile(models.Model):
-    user = models.OneToOneField(
-        User, on_delete=models.CASCADE
-    )  # User fields include: first_name, last_name, email, password, is_staff, is_active, date_joined, last_login
-    image = models.URLField()
-    updated_at = models.DateTimeField(auto_now=True)
+from src.db.users.models import User
 
 
 # Property model

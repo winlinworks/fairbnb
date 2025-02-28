@@ -47,7 +47,7 @@ jobs:
 
       - name: Set up Django environment
         run: |
-          export DJANGO_SETTINGS_MODULE=src.fairbnb.settings
+          export DJANGO_SETTINGS_MODULE=src.db.settings
 
       - name: Run Tests
         run: pytest -vv

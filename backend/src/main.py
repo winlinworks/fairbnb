@@ -10,12 +10,13 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.wsgi import WSGIMiddleware
 
 # Initialize Django app before importing models
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "src.fairbnb.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "src.db.settings")
 django.setup()
 
 # from src.crud import PropertyDBClient, UserDBClient  # noqa: E402
-from src.fairbnb.models import Property, User  # noqa: E402
-from src.fairbnb.settings import DEBUG  # noqa: E402
+from src.db.properties.models import Property  # noqa: E402
+from src.db.settings import DEBUG  # noqa: E402
+from src.db.users.models import User  # noqa: E402
 from src.schemas import PropertyCreate, PropertyRead, UserCreate, UserRead  # noqa: E402
 from src.seed import seed_database  # noqa: E402
 
@@ -56,10 +57,6 @@ def add_user(user: UserCreate):
     # If user with email already exists, raise an error
     if User.objects.filter(email=user.email).first():
         raise HTTPException(status_code=400, detail="Email already registered")
-
-    # If user with username already exists, raise an error
-    if User.objects.filter(username=user.username).first():
-        raise HTTPException(status_code=400, detail="Username already registered")
 
     # Else, create user
     user = User.objects.create(**user.model_dump())
