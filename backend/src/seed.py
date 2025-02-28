@@ -2,11 +2,8 @@
 import json
 from pathlib import Path
 
-from src.crud import PropertyDBClient, UserDBClient
+from src.fairbnb.models import Property, User
 from src.schemas import PropertyCreate, UserCreate
-
-user_db = UserDBClient()
-property_db = PropertyDBClient()
 
 
 def seed_database():
@@ -23,8 +20,8 @@ def seed_users():
     # Create users
     for user_data in users:
         user = UserCreate(**user_data)
-        if not user_db.check_record_exists(email=user.email):
-            user_db.create(**user.model_dump())
+        if not User.objects.filter(email=user.email).first():
+            User.objects.create(**user.model_dump())
 
 
 def seed_properties():
@@ -35,8 +32,8 @@ def seed_properties():
 
     # Create properties
     for property_data in properties:
-        owner = user_db.read(username=property_data["owner_username"])
+        owner = User.objects.filter(username=property_data["owner_username"]).first()
         property_data["owner_id"] = owner.id
         property = PropertyCreate(**property_data)
-        if not property_db.check_record_exists(name=property.name):
-            property_db.create(**property.model_dump())
+        if not Property.objects.filter(name=property.name).first():
+            Property.objects.create(**property.model_dump())
