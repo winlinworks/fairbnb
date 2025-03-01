@@ -1,31 +1,32 @@
 import logging
+import os
 import sys
 from contextlib import asynccontextmanager
 
-from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, HTTPException
-from sqlalchemy.orm import Session
+import django
+from asgiref.sync import sync_to_async
+from django.core.wsgi import get_wsgi_application
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.wsgi import WSGIMiddleware
 
-from src.crud import (
-    create_listing,
-    create_user,
-    delete_listing,
-    delete_user,
-    read_listing,
-    read_listings,
-    read_user,
-    read_user_by_email,
-    read_users,
-    update_listing,
-    update_user,
-)
-from src.db import get_db
-from src.schemas import ListingCreate, ListingRead, UserCreate, UserRead
+# Initialize Django app before importing models
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "src.db.settings")
+django.setup()
 
-load_dotenv()
+# from src.crud import PropertyDBClient, UserDBClient  # noqa: E402
+from src.db.properties.models import Property  # noqa: E402
+from src.db.settings import DEBUG  # noqa: E402
+from src.db.users.models import User  # noqa: E402
+from src.schemas import PropertyCreate, PropertyRead, UserCreate, UserRead  # noqa: E402
+from src.seed import seed_database  # noqa: E402
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+
+if DEBUG:
+    logger.setLevel(logging.DEBUG)
+else:
+    logger.setLevel(logging.INFO)
+
 stream_handler = logging.StreamHandler(sys.stdout)
 log_formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 stream_handler.setFormatter(log_formatter)
@@ -35,102 +36,157 @@ logger.addHandler(stream_handler)
 @asynccontextmanager
 async def lifespan(app: FastAPI):  # noqa: ARG001
     logger.info("startup: triggered")
+
+    # Seed database if in DEBUG mode
+    if DEBUG:
+        await sync_to_async(seed_database)()
+        logger.info("Database seeded")
     yield
     logger.info("shutdown: triggered")
 
 
 app = FastAPI(lifespan=lifespan)
 
+# Mount the Django WSGI application
+django_app = get_wsgi_application()
+app.mount("/django", WSGIMiddleware(django_app))
+
 
 @app.post("/users", response_model=UserRead)
-def post_user(user: UserCreate, db: Session = Depends(get_db)):
-    db_user = read_user_by_email(db, user.email)
-
-    if db_user:
+def add_user(user: UserCreate):
+    # If user with email already exists, raise an error
+    if User.objects.filter(email=user.email).first():
         raise HTTPException(status_code=400, detail="Email already registered")
-    return create_user(db, user)
 
+    # Else, create user
+    user = User.objects.create(**user.model_dump())
+    logger.info("User created with ID: %s", user.id)
 
-@app.get("/users", response_model=list[UserRead])
-def get_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return read_users(db, skip, limit)
+    return user
 
 
 @app.get("/users/{user_id}", response_model=UserRead)
-def get_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = read_user(db, user_id)
+def get_user(user_id: int):
+    # Get user for user_id
+    db_user = User.objects.filter(id=user_id).first()
+
+    # If user does not exist, raise an error
     if db_user is None:
         raise HTTPException(status_code=404, detail=f"User ID {user_id} not found")
+
     return db_user
 
 
+@app.get("/users", response_model=list[UserRead])
+def get_users():
+    # Get all users
+    return User.objects.all()
+
+
 @app.put("/users/{user_id}", response_model=UserRead)
-def put_user(user_id: int, user: UserRead, db: Session = Depends(get_db)):
-    db_user = read_user(db, user_id)
-    if db_user is None:
+def update_user(user_id: int, user: UserCreate):
+    # Get user
+    db_user = User.objects.filter(id=user_id).first()
+
+    # If user does not exist, raise an error
+    if not db_user:
         raise HTTPException(status_code=404, detail=f"User ID {user_id} not found")
 
-    return update_user(db, user_id, user)
+    # Update user
+    for key, value in user.model_dump().items():
+        setattr(db_user, key, value)
+    db_user.save()
+
+    return db_user
 
 
 @app.delete("/users/{user_id}")
-def remove_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = read_user(db, user_id)
-    if db_user is None:
+def delete_user(user_id: int):
+    # Get user
+    db_user = User.objects.filter(id=user_id).first()
+
+    # If user does not exist, raise an error
+    if not db_user:
         raise HTTPException(status_code=404, detail=f"User ID {user_id} not found")
 
-    return delete_user(db, user_id)
+    # Delete user
+    db_user.delete()
+    logger.info("User deleted with ID: %s", user_id)
+
+    return {"detail": f"User ID {user_id} deleted successfully"}
 
 
-@app.post("/users/{user_id}/listings", response_model=ListingRead)
-def post_listing(user_id: int, listing: ListingCreate, db: Session = Depends(get_db)):
-    db_user = read_user(db, user_id)
-    if db_user is None:
+@app.post("/users/{user_id}/properties", response_model=PropertyRead)
+def add_property(user_id: int, property: PropertyCreate):
+    # Get user based on user_id
+    if not User.objects.filter(id=user_id).first():
         raise HTTPException(status_code=404, detail=f"User ID {user_id} not found")
 
-    return create_listing(db, listing, user_id)
+    # Create property
+    property = Property.objects.create(**property.model_dump())
+    logger.info("Property created with ID: %s", property.id)
+
+    return property
 
 
-@app.get("/listings", response_model=list[ListingRead])
-def get_listings(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return read_listings(db, skip, limit)
+@app.get("/properties", response_model=list[PropertyRead])
+def get_properties():
+    # Get all properties
+    return Property.objects.all()
 
 
-@app.get("/listings/{listing_id}", response_model=ListingRead)
-def get_listing(listing_id: int, db: Session = Depends(get_db)):
-    db_listing = read_listing(db, listing_id)
-    if db_listing is None:
+@app.get("/properties/{property_id}", response_model=PropertyRead)
+def get_property(property_id: int):
+    # Get roperty for listing_id
+    db_property = Property.objects.filter(id=property_id).first()
+
+    # If property does not exist, raise an error
+    if not db_property:
         raise HTTPException(
-            status_code=404, detail=f"Listing ID {listing_id} not found"
-        )
-    return db_listing
-
-
-@app.put("/listings/{listing_id}", response_model=ListingRead)
-def put_listing(listing_id: int, listing: ListingRead, db: Session = Depends(get_db)):
-    # Verify if user exists
-    db_user = read_user(db, listing.owner_id)
-    if db_user is None:
-        raise HTTPException(
-            status_code=404, detail=f"User ID {listing.owner_id} not found"
+            status_code=404, detail=f"Property ID {property_id} not found"
         )
 
-    # Verify if listing exists
-    db_listing = read_listing(db, listing_id)
-    if db_listing is None:
+    return db_property
+
+
+@app.put("/properties/{property_id}", response_model=PropertyRead)
+def update_property(property_id: int, property: PropertyCreate):
+    # Get property
+    db_property = Property.objects.filter(id=property_id).first()
+
+    # If property does not exist, raise an error
+    if not db_property:
         raise HTTPException(
-            status_code=404, detail=f"Listing ID {listing_id} not found"
+            status_code=404, detail=f"Listing ID {property_id} not found"
         )
 
-    return update_listing(db, listing_id, listing)
-
-
-@app.delete("/listings/{listing_id}")
-def remove_listing(listing_id: int, db: Session = Depends(get_db)):
-    db_listing = read_listing(db, listing_id)
-    if db_listing is None:
+    # If owner of updated property does not exist, raise an error
+    if not User.objects.filter(id=property.owner_id).first():
         raise HTTPException(
-            status_code=404, detail=f"Listing ID {listing_id} not found"
+            status_code=422, detail=f"Owner ID {property.owner_id} not found"
         )
 
-    return delete_listing(db, listing_id)
+    # Update property fields
+    for key, value in property.model_dump().items():
+        setattr(db_property, key, value)
+    db_property.save()
+
+    return db_property
+
+
+@app.delete("/properties/{property_id}")
+def delete_property(property_id: int):
+    # Get property
+    db_property = Property.objects.filter(id=property_id).first()
+
+    # If property does not exist, raise an error
+    if not db_property:
+        raise HTTPException(
+            status_code=404, detail=f"Listing ID {property_id} not found"
+        )
+
+    # Delete property
+    db_property.delete()
+    logger.info("Property deleted with ID: %s", property_id)
+
+    return {"detail": f"Property ID {property_id} deleted successfully"}

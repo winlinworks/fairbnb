@@ -24,13 +24,16 @@ FROM base AS build
 ARG APP_DIR
 
 # Install curl so we can get poetry
-# install build-base and libffi-dev so we can install poetry and dependencies (compiles some code)
-RUN apk --no-cache add curl build-base libffi-dev
+# install build-base, libffi-dev, and libpq-dev so we can install poetry and dependencies (compiles some code)
+RUN apk --no-cache add curl build-base libffi-dev libpq-dev
 
 # install poetry and add to path
 ENV POETRY_VERSION=1.8.3
 RUN curl -sSL https://install.python-poetry.org | python -
 ENV PATH /root/.local/bin:$PATH
+
+# Set environment variable for Django settings module
+# ENV DJANGO_SETTINGS_MODULE=src.fairbnb.settings
 
 # change work directory for where our app will live
 WORKDIR ${APP_DIR}
@@ -42,6 +45,8 @@ RUN if [ $DEV ]; then \
     poetry install --only main; \
     fi
 
+COPY entrypoint.sh ./
+
 
 #############
 # Deployment image
@@ -51,7 +56,14 @@ ARG APP_DIR
 
 COPY --from=build ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
-WORKDIR ${APP_DIR}/
-COPY  . ./
+WORKDIR ${APP_DIR}
+COPY . ./
 
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Set the PYTHONPATH environment variable
+ENV PYTHONPATH=${APP_DIR}
+
+# Ensure entrypoint script is executable
+RUN chmod +x entrypoint.sh
+
+# Set entrypoint
+ENTRYPOINT ["sh", "entrypoint.sh"]

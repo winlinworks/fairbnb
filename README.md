@@ -1,11 +1,36 @@
 # Fairbnb
 Welcome to Fairbnb, a clone of Airbnb. This doc aims to quickly onboard devs to the product, including local dev setup, tools, patterns, and ways of working. To suggest edits, open an issue in this repo.
 
-## Set up local dev environment
-To load virtual environment in your shell, run `poetry shell`. Dependencies for the app are included in the `poetry.lock` and `pyproject.toml` files. You can also load the virtual environment separately for each command by running `poetry run {your command}`.
+## Set up local back-end dev environment
+To load virtual environment in your shell, go to the `backend` folder and run `poetry shell`. Dependencies for the app are included in the `poetry.lock` and `pyproject.toml` files. To update and install dependencies, use `poetry add` followed by `poetry install`; avoid editing `pyproject.toml` directly (but run `poetry update` if you do). You can also load the virtual environment separately for each command by running `poetry run {your command}`.
+
+Create a file `backend/.env.docker` with the environment variables below for the BE container. You can also run `source .env.docker` to add the environment variables to your local machine for development before building the BE container.
+```
+# Dev database credentials
+export POSTGRES_USER="{username}"
+export POSTGRES_PASS="{password}"
+export POSTGRES_HOST="{db-host}"
+export POSTGRES_PORT="{db-port}"
+export POSTGRES_DB="{db-name}"
+
+# Django environment variables to develop on local machine (not container)
+export DJANGO_SETTINGS_MODULE="src.db.settings"
+export DJANGO_SECRET_KEY="{django-secret-key}"
+```
+
+## Set up local front-end dev environment
+Create a file `frontend/.env` with the environment variables below for the FE container.
+```
+export NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY={clerk-key}
+export CLERK_SECRET_KEY={clerk-secret}
+
+export NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/profile/create
+export NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/profile/create
+export NEXT_PUBLIC_API_URL=127.0.0.1:8000
+```
 
 ## Run app locally
-To run the application for development, run `docker compose up --build --watch -d`. You can also use Podman, a more secure and container/pod manager, by running `podman compose --file docker-compose.yml up --detach`. View the website by visiting `http://127.0.0.1:3000` in a browser.
+Make sure to complete the above setup for local BE and FE dev environments before building the containers. To run the application for development, go to the project root folder and run `docker compose up --build -d`. You can also use Podman, a more secure and container/pod manager, by running `podman compose up --build -d`. View the website by visiting `http://127.0.0.1:3000` in a browser.
 
 After running the app locally, you can view the API docs by visiting `http://127.0.0.1:8000/docs` in a browser.
 
