@@ -1,13 +1,30 @@
-import React from "react";
+"use client";
+
+import { useEffect, useState } from "react";
 import { fetchUserInfo } from "@/lib/api/fetchData";
+import { updateProfileAction } from "@/lib/api/updateData";
 
 import FormContainer from "@/components/form/FormContainer";
 import FormInput from "@/components/form/FormInput";
 import SubmitButton from "@/components/form/Buttons";
-import { updateProfileAction } from "@/lib/api/updateData";
+import { set } from "date-fns";
 
-async function ProfilePage(id: string) {
-  const profile = await fetchUserInfo(id);
+function ProfilePage({ params }: { params: { id: string } }) {
+  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchUserInfo(params.id);
+        setProfile(data);
+      } catch (error) {
+        console.error("Failed to fetch profile", error);
+      }
+    };
+    fetchData();
+  }, [params.id]);
+  if (!profile) return <p>Loading...</p>;
 
   return (
     <section>
@@ -16,12 +33,13 @@ async function ProfilePage(id: string) {
         {/* image input container */}
 
         <FormContainer action={updateProfileAction}>
-          <div className="grid gap-4 md:grid-cols-2 mt-4 ">
+          <div className="grid gap-4 md:grid-cols-1 mt-4">
             <FormInput
               type="text"
               name="firstName"
               label="First Name"
               defaultValue={profile.firstName}
+              placeholder="First Name"
             />
             <FormInput
               type="text"
@@ -29,14 +47,15 @@ async function ProfilePage(id: string) {
               label="Last Name"
               defaultValue={profile.lastName}
             />
+
             <FormInput
               type="text"
-              name="username"
-              label="Username"
-              defaultValue={profile.username}
+              name="email"
+              label="Email address"
+              defaultValue={profile.email}
             />
+            <SubmitButton text="Update Profile" className="mt-8" />
           </div>
-          <SubmitButton text="Update Profile" className="mt-8" />
         </FormContainer>
       </div>
     </section>

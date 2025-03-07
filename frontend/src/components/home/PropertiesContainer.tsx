@@ -1,5 +1,5 @@
 import React from "react";
-import { fetchProperties } from "@/utils/actions";
+import { fetchPropertiesListings } from "@/lib/api/fetchData";
 import PropertiesList from "./PropertiesList";
 import EmptyList from "./EmptyList";
 import type { PropertyCardProps } from "@/utils/types";
@@ -11,10 +11,7 @@ async function PropertiesContainer({
   category?: string;
   search?: string;
 }) {
-  const properties: PropertyCardProps[] = await fetchProperties({
-    category,
-    search,
-  });
+  const properties: PropertyCardProps[] = await fetchPropertiesListings();
 
   if (properties.length === 0) {
     return (
