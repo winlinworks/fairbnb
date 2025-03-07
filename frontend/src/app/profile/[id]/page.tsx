@@ -41,18 +41,19 @@ function ProfilePage({ params }: { params: { id: string } }) {
               defaultValue={profile.firstName}
               placeholder="First Name"
             />
-            {/* <FormInput
+            <FormInput
               type="text"
               name="lastName"
               label="Last Name"
               defaultValue={profile.lastName}
             />
-           
+
             <FormInput
               type="text"
               name="email"
               label="Email address"
-              defaultValue={profile.email} />*/}
+              defaultValue={profile.email}
+            />
             <SubmitButton text="Update Profile" className="mt-8" />
           </div>
         </FormContainer>
